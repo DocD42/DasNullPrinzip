@@ -12,7 +12,7 @@ struct DashboardView: View {
                         hero
 
                         HStack(spacing: 12) {
-                            NullMetric(value: "0 %", label: "Fortschritt heute", symbol: "percent", tint: NullTheme.oxblood)
+                            NullMetric(value: "\(store.todayNullQuote) %", label: "Nullquote heute", symbol: "percent", tint: NullTheme.oxblood)
                             NullMetric(value: "\(store.totalPotentialityDays)", label: "Tage Potenzial", symbol: "sparkles", tint: NullTheme.navy)
                         }
 
@@ -57,7 +57,7 @@ struct DashboardView: View {
                             dashboardRow(
                                 title: "Nicht begonnen",
                                 value: store.habits.first?.title ?? "Neue Gewohnheit",
-                                detail: "\(store.habits.first?.daysUnstarted ?? 0) Tage im Zustand reiner Potenzialität",
+                                detail: "\(store.reassuredHabitsTodayCount) von \(store.habits.count) Nichtbeginnen heute bestätigt",
                                 symbol: "square.dashed"
                             )
 
@@ -100,12 +100,12 @@ struct DashboardView: View {
             )
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Heute: 0 %")
+                Text("Heute: \(store.todayNullQuote) %")
                     .font(.system(size: 40, weight: .black, design: .default))
                     .foregroundStyle(NullTheme.paper)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                Text("Minimaler Aufwand. Maximale Ausrede.")
+                Text("Nullquote aus dem Tracker. Umsetzung bleibt 0 %.")
                     .font(.headline.weight(.bold))
                     .foregroundStyle(NullTheme.paper.opacity(0.9))
             }

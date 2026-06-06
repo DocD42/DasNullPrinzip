@@ -19,6 +19,27 @@ struct NullHabit: Identifiable, Codable, Equatable {
         Calendar.current.dateComponents([.day], from: createdAt.dnpStartOfDay, to: Date().dnpStartOfDay).day ?? 0
     }
 
+    var isReassuredToday: Bool {
+        guard let lastReassuredAt else { return false }
+        return Calendar.current.isDate(lastReassuredAt, inSameDayAs: Date())
+    }
+
+    var trackerStatusTitle: String {
+        isReassuredToday ? "Heute gesichert" : "Heute offen"
+    }
+
+    var trackerStatusSymbol: String {
+        isReassuredToday ? "checkmark.seal" : "hand.raised"
+    }
+
+    var trackerLine: String {
+        if isReassuredToday {
+            "Dieser Nichtbeginn zahlt heute auf die Nullquote ein."
+        } else {
+            "Noch nicht für die heutige Nullquote bestätigt."
+        }
+    }
+
     var milestone: String {
         switch daysUnstarted {
         case 100...:
@@ -343,6 +364,16 @@ final class NullStore: ObservableObject {
 
     var totalPotentialityDays: Int {
         habits.reduce(0) { $0 + $1.daysUnstarted }
+    }
+
+    var reassuredHabitsTodayCount: Int {
+        habits.filter(\.isReassuredToday).count
+    }
+
+    var todayNullQuote: Int {
+        guard !habits.isEmpty else { return 0 }
+        let share = Double(reassuredHabitsTodayCount) / Double(habits.count)
+        return Int((share * 100).rounded())
     }
 
     var dailyMantra: String {

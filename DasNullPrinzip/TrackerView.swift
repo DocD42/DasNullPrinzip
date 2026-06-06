@@ -9,17 +9,8 @@ struct TrackerView: View {
             NullScreen {
                 ScrollView {
                     LazyVStack(spacing: 12) {
-                        NullCard(fill: NullTheme.navy) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("0%-Tracker")
-                                    .font(.system(.title2, design: .serif).weight(.black))
-                                Text("Tracke nicht, ob du etwas getan hast, sondern wie stabil du es nicht begonnen hast.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(NullTheme.paper.opacity(0.78))
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .foregroundStyle(NullTheme.paper)
-                        }
+                        trackerIntro
+                        trackerProgress
 
                         ForEach(store.habits) { habit in
                             habitCard(habit)
@@ -42,6 +33,46 @@ struct TrackerView: View {
             .sheet(isPresented: $isAddingHabit) {
                 AddHabitSheet()
                     .environmentObject(store)
+            }
+        }
+    }
+
+    private var trackerIntro: some View {
+        NullCard(fill: NullTheme.navy) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("0%-Tracker")
+                    .font(.system(.title2, design: .serif).weight(.black))
+                Text("Hier liegen Vorhaben, die heute unangetastet bleiben. Reifen ist für Aufgaben, deren Status wandert.")
+                    .font(.subheadline)
+                    .foregroundStyle(NullTheme.paper.opacity(0.78))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(NullTheme.paper)
+        }
+    }
+
+    private var trackerProgress: some View {
+        NullCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Nullquote heute")
+                            .font(.caption.weight(.black))
+                            .foregroundStyle(NullTheme.oxblood)
+                        Text("\(store.todayNullQuote) %")
+                            .font(.system(.largeTitle, design: .serif).weight(.black))
+                            .lineLimit(1)
+                    }
+                    Spacer(minLength: 8)
+                    StatusPill(title: "\(store.reassuredHabitsTodayCount)/\(store.habits.count)", symbol: "checkmark")
+                }
+
+                TrackerMeter(value: store.todayNullQuote)
+
+                Text("Jede bestätigte Box erhöht die Tagesquote. Der Inhalt selbst bleibt natürlich bei 0 % Umsetzung.")
+                    .font(.subheadline)
+                    .foregroundStyle(NullTheme.mutedInk)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -69,28 +100,63 @@ struct TrackerView: View {
                         .foregroundStyle(NullTheme.mutedInk)
                 }
 
+                Text(habit.trackerLine)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(NullTheme.mutedInk)
+                    .fixedSize(horizontal: false, vertical: true)
+
                 HStack(spacing: 10) {
                     Button {
-                        store.reassure(habit: habit)
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                            store.reassure(habit: habit)
+                        }
                     } label: {
-                        Label("Weiter nicht begonnen", systemImage: "hand.raised")
+                        Label(habit.isReassuredToday ? "Heute gesichert" : "Heute nicht begonnen", systemImage: habit.trackerStatusSymbol)
                             .font(.subheadline.weight(.bold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(NullTheme.ink)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(habit.isReassuredToday ? NullTheme.navy : NullTheme.paper)
+                    .background(habit.isReassuredToday ? NullTheme.navy.opacity(0.10) : NullTheme.oxblood)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .accessibilityLabel(habit.trackerStatusTitle)
 
                     Button(role: .destructive) {
                         store.deleteHabit(habit)
                     } label: {
                         Image(systemName: "trash")
-                            .frame(width: 38, height: 34)
+                            .font(.headline.weight(.bold))
+                            .frame(width: 40, height: 40)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(NullTheme.oxblood)
+                    .background(NullTheme.oxblood.opacity(0.10))
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .accessibilityLabel("Gewohnheit löschen")
                 }
             }
         }
+    }
+}
+
+private struct TrackerMeter: View {
+    let value: Int
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(NullTheme.oxblood.opacity(0.12))
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(NullTheme.oxblood)
+                    .frame(width: proxy.size.width * CGFloat(value) / 100)
+            }
+        }
+        .frame(height: 10)
+        .accessibilityLabel("Nullquote \(value) Prozent")
     }
 }
 
