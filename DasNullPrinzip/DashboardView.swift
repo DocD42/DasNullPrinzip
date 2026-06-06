@@ -54,19 +54,7 @@ struct DashboardView: View {
                         }
 
                         VStack(spacing: 12) {
-                            dashboardRow(
-                                title: "Innere Ideen",
-                                value: store.habits.first?.title ?? "Neue Idee",
-                                detail: "Selbst gestellte Vorhaben. Jede Konkretisierung schadet dem Score.",
-                                symbol: "lightbulb"
-                            )
-
-                            dashboardRow(
-                                title: "Äußere Aufgaben",
-                                value: store.tasks.first?.title ?? "Neue Aufgabe",
-                                detail: "Von außen an dich herangetragen. Liegenlassen erzeugt Druck.",
-                                symbol: "tray"
-                            )
+                            perspectiveCards
 
                             dashboardRow(
                                 title: "Nichtstun registriert",
@@ -81,6 +69,32 @@ struct DashboardView: View {
             }
             .navigationTitle("Das Null-Prinzip")
             .toolbarBackground(NullTheme.parchment, for: .navigationBar)
+        }
+    }
+
+    private var perspectiveCards: some View {
+        VStack(spacing: 12) {
+            ScorePanel(
+                title: "Innere Ideen",
+                score: store.trackerDeviationScore,
+                value: store.habits.first?.title ?? "Neue Idee",
+                detail: "Selbst gestellt. Jede Konkretisierung zieht vom 0%-Ideal weg.",
+                symbol: "lightbulb",
+                fill: NullTheme.paper,
+                accent: NullTheme.gold,
+                isDark: false
+            )
+
+            ScorePanel(
+                title: "Äußere Aufgaben",
+                score: store.ripeningDeviationScore,
+                value: store.tasks.first?.title ?? "Neue Aufgabe",
+                detail: "Von außen gestellt. Liegenlassen erzeugt sichtbaren Druck.",
+                symbol: "tray",
+                fill: NullTheme.navy,
+                accent: NullTheme.oxblood,
+                isDark: true
+            )
         }
     }
 
@@ -140,5 +154,87 @@ struct DashboardView: View {
                 }
             }
         }
+    }
+}
+
+private struct ScorePanel: View {
+    let title: String
+    let score: Int
+    let value: String
+    let detail: String
+    let symbol: String
+    let fill: Color
+    let accent: Color
+    let isDark: Bool
+
+    private var primary: Color {
+        isDark ? NullTheme.paper : NullTheme.ink
+    }
+
+    private var secondary: Color {
+        isDark ? NullTheme.paper.opacity(0.76) : NullTheme.mutedInk
+    }
+
+    private var track: Color {
+        isDark ? NullTheme.paper.opacity(0.16) : accent.opacity(0.14)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 13) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.title2.weight(.black))
+                    .foregroundStyle(accent)
+                    .frame(width: 34, height: 34)
+                    .background(accent.opacity(isDark ? 0.20 : 0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.caption.weight(.black))
+                        .foregroundStyle(accent)
+                    Text(value)
+                        .font(.headline.weight(.black))
+                        .foregroundStyle(primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .layoutPriority(1)
+
+                Spacer(minLength: 8)
+
+                Text("\(score) %")
+                    .font(.system(.title3, design: .serif).weight(.black))
+                    .foregroundStyle(primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(track)
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(accent)
+                        .frame(width: proxy.size.width * CGFloat(score) / 100)
+                }
+            }
+            .frame(height: 10)
+
+            Text(detail)
+                .font(.subheadline)
+                .foregroundStyle(secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(fill)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(isDark ? NullTheme.paper.opacity(0.12) : NullTheme.rule, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(isDark ? 0.11 : 0.07), radius: 10, x: 0, y: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(score) Prozent Abweichung")
     }
 }

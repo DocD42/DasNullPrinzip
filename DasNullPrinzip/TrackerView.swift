@@ -91,7 +91,11 @@ struct TrackerView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 8)
-                    StatusPill(title: habit.currentStatus.title, symbol: habit.currentStatus.symbol, tint: habit.deviation == 0 ? NullTheme.navy : NullTheme.oxblood)
+                    IdeaStatusBadge(
+                        title: habit.currentStatus.title,
+                        symbol: habit.currentStatus.symbol,
+                        tint: habit.deviation == 0 ? NullTheme.navy : NullTheme.oxblood
+                    )
                 }
 
                 if !habit.notes.isEmpty {
@@ -119,7 +123,7 @@ struct TrackerView: View {
                             }
                         }
                     } label: {
-                        Label(habit.canAdvance ? "Richtung Anfang" : "Zurück auf 0 %", systemImage: habit.canAdvance ? "arrow.right" : "arrow.uturn.backward")
+                        Label(habit.canAdvance ? "Wird konkret" : "Zurück auf 0 %", systemImage: habit.canAdvance ? "arrow.right" : "arrow.uturn.backward")
                             .font(.subheadline.weight(.bold))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -130,7 +134,7 @@ struct TrackerView: View {
                     .foregroundStyle(NullTheme.paper)
                     .background(habit.canAdvance ? NullTheme.oxblood : NullTheme.navy)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .accessibilityLabel(habit.canAdvance ? "Idee näher an den Anfang schieben" : "Idee auf null Prozent zurücksetzen")
+                    .accessibilityLabel(habit.canAdvance ? "Idee wird konkreter" : "Idee auf null Prozent zurücksetzen")
 
                     if habit.canAdvance, habit.canRegress {
                         Button {
@@ -164,6 +168,34 @@ struct TrackerView: View {
                 }
             }
         }
+    }
+}
+
+private struct IdeaStatusBadge: View {
+    let title: String
+    let symbol: String
+    let tint: Color
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 6) {
+            Image(systemName: symbol)
+                .font(.caption.weight(.bold))
+                .frame(width: 14)
+
+            Text(title)
+                .font(.caption.weight(.bold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.82)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .multilineTextAlignment(.leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .frame(width: 136, alignment: .leading)
+        .foregroundStyle(tint)
+        .background(tint.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .accessibilityLabel(title)
     }
 }
 
