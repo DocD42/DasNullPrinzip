@@ -44,10 +44,7 @@ struct ChallengeView: View {
                 Button {
                     store.toggleChallengeDay(day.id)
                 } label: {
-                    Image(systemName: isDone ? "checkmark.square.fill" : "square")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(isDone ? NullTheme.oxblood : NullTheme.mutedInk)
-                        .frame(width: 34, height: 34)
+                    ChallengeCheckbox(isDone: isDone)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(isDone ? "Tag als offen markieren" : "Tag als nicht begonnen markieren")
@@ -66,5 +63,41 @@ struct ChallengeView: View {
                 }
             }
         }
+    }
+}
+
+private struct ChallengeCheckbox: View {
+    let isDone: Bool
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .fill(isDone ? NullTheme.oxblood.opacity(0.12) : Color.clear)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .stroke(isDone ? NullTheme.oxblood : NullTheme.mutedInk, lineWidth: 2)
+                }
+
+            CheckmarkShape()
+                .trim(from: 0, to: isDone ? 1 : 0)
+                .stroke(
+                    NullTheme.oxblood,
+                    style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round)
+                )
+                .padding(8)
+        }
+        .frame(width: 34, height: 34)
+        .contentShape(Rectangle())
+        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: isDone)
+    }
+}
+
+private struct CheckmarkShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.midX * 0.82, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        return path
     }
 }
