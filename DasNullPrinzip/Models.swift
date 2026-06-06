@@ -312,33 +312,241 @@ extension NullStore {
 
 enum ExcuseFactory {
     static func generate(for rawTopic: String, mode: ExcuseMode) -> String {
-        let topic = cleanedTopic(rawTopic)
+        let topic = ExcuseTopic(rawTopic)
 
         switch mode {
         case .corporate:
-            return "Ich habe \(topic) bewusst zurückgestellt, um die strategische Aussagequalität nicht durch operative Hast zu gefährden."
+            return "Ich habe \(topic.object) bewusst zurückgestellt, um die strategische Aussagequalität nicht durch operative Hast zu gefährden."
         case .mindful:
-            return "\(topic.capitalizedFirst) durfte heute in einen achtsam unberührten Zustand übergehen, damit Handlung nicht mit innerer Anschlussfähigkeit verwechselt wird."
+            return "\(topic.subject) durfte heute in einen achtsam unberührten Zustand übergehen, damit Handlung nicht mit innerer Anschlussfähigkeit verwechselt wird."
         case .financiallyPrudent:
-            return "Ich habe \(topic) als Liquiditätsreserve meiner Aufmerksamkeit behandelt. Jede Umsetzung hätte Opportunitätskosten erzeugt."
+            return "Ich habe \(topic.object) als Liquiditätsreserve meiner Aufmerksamkeit behandelt. Jede Umsetzung hätte Opportunitätskosten erzeugt."
         case .stoic:
-            return "Ich habe \(topic) nicht erzwungen. Was reif ist, erscheint. Was erscheint, kann immer noch ignoriert werden."
+            return "\(topic.subject) wurde nicht erzwungen. Was reif ist, erscheint. Was erscheint, kann immer noch ignoriert werden."
         case .therapeutic:
-            return "\(topic.capitalizedFirst) ist momentan weniger eine Aufgabe als ein Beziehungsmuster zwischen Absicht und Selbstschutz."
+            return "\(topic.subject) ist momentan weniger eine Aufgabe als ein Beziehungsmuster zwischen Absicht und Selbstschutz."
         case .boardSafe:
-            return "Die Umsetzung von \(topic) wurde in eine kontrollierte Beobachtungsphase überführt, um voreilige Wirksamkeit auszuschließen."
+            return "Die Umsetzung rund um \(topic.context) wurde in eine kontrollierte Beobachtungsphase überführt, um voreilige Wirksamkeit auszuschließen."
         case .relationshipSafe:
-            return "Ich wollte \(topic) nicht lieblos erledigen, sondern unserer gemeinsamen Erwartung die Zeit geben, sich ohne Druck neu zu sortieren."
+            return "Ich wollte \(topic.object) nicht lieblos erledigen, sondern unserer gemeinsamen Erwartung die Zeit geben, sich ohne Druck neu zu sortieren."
         case .parentEvening:
-            return "Wir haben \(topic) pädagogisch begleitet und bewusst auf eine vorschnelle Ergebnissicherung verzichtet."
+            return "Wir haben \(topic.context) pädagogisch begleitet und bewusst auf eine vorschnelle Ergebnissicherung verzichtet."
         }
     }
 
-    private static func cleanedTopic(_ raw: String) -> String {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        let fallback = "die Angelegenheit"
-        let withoutPeriod = trimmed.trimmingCharacters(in: CharacterSet(charactersIn: ".!?"))
-        return withoutPeriod.isEmpty ? fallback : withoutPeriod
+    private struct ExcuseTopic {
+        let object: String
+        let subject: String
+        let context: String
+
+        init(_ raw: String) {
+            let cleaned = Self.cleaned(raw)
+            guard !cleaned.isEmpty else {
+                self.object = "die Angelegenheit"
+                self.subject = "Die Angelegenheit"
+                self.context = "die Angelegenheit"
+                return
+            }
+
+            if let object = Self.objectFromCompletedSentence(cleaned) {
+                self.object = object
+                self.subject = Self.subject(from: object)
+                self.context = object
+                return
+            }
+
+            if let plan = Self.planFromIntentionSentence(cleaned) {
+                let wrapped = "das Vorhaben „\(plan)“"
+                self.object = wrapped
+                self.subject = Self.subject(from: wrapped)
+                self.context = wrapped
+                return
+            }
+
+            if Self.looksLikeNounPhrase(cleaned) {
+                self.object = cleaned
+                self.subject = Self.subject(from: cleaned)
+                self.context = cleaned
+            } else {
+                let wrapped = "das Vorhaben „\(cleaned)“"
+                self.object = wrapped
+                self.subject = Self.subject(from: wrapped)
+                self.context = wrapped
+            }
+        }
+
+        private static func cleaned(_ raw: String) -> String {
+            raw
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .trimmingCharacters(in: CharacterSet(charactersIn: ".!?"))
+                .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        }
+
+        private static func objectFromCompletedSentence(_ text: String) -> String? {
+            let prefixes = [
+                "ich habe ",
+                "ich hab ",
+                "habe ",
+                "hab "
+            ]
+
+            guard var remainder = dropAnyPrefix(prefixes, from: text) else {
+                return nil
+            }
+
+            remainder = stripLeadingFillers(from: remainder)
+            remainder = stripNegatedEnding(from: remainder)
+            return remainder.isEmpty ? nil : remainder
+        }
+
+        private static func planFromIntentionSentence(_ text: String) -> String? {
+            let prefixes = [
+                "ich muss ",
+                "ich müsste ",
+                "ich sollte ",
+                "ich soll ",
+                "ich wollte ",
+                "ich werde ",
+                "ich bin nicht "
+            ]
+
+            guard var remainder = dropAnyPrefix(prefixes, from: text) else {
+                return nil
+            }
+
+            remainder = stripLeadingFillers(from: remainder)
+            remainder = stripNegatedEnding(from: remainder)
+            return remainder.isEmpty ? nil : remainder
+        }
+
+        private static func dropAnyPrefix(_ prefixes: [String], from text: String) -> String? {
+            let lowercased = text.lowercased()
+            guard let prefix = prefixes.first(where: { lowercased.hasPrefix($0) }) else {
+                return nil
+            }
+
+            let start = text.index(text.startIndex, offsetBy: prefix.count)
+            return String(text[start...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        private static func stripLeadingFillers(from text: String) -> String {
+            var result = text
+            let fillers = [
+                "heute ",
+                "gestern ",
+                "wieder ",
+                "eigentlich ",
+                "noch ",
+                "bewusst "
+            ]
+
+            var changed = true
+            while changed {
+                changed = false
+                let lowercased = result.lowercased()
+                if let filler = fillers.first(where: { lowercased.hasPrefix($0) }) {
+                    let start = result.index(result.startIndex, offsetBy: filler.count)
+                    result = String(result[start...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    changed = true
+                }
+            }
+
+            return result
+        }
+
+        private static func stripNegatedEnding(from text: String) -> String {
+            var result = text
+            let endings = [
+                "noch nicht fertiggestellt",
+                "noch nicht vorbereitet",
+                "noch nicht beantwortet",
+                "noch nicht geschrieben",
+                "noch nicht aufgeräumt",
+                "noch nicht sortiert",
+                "noch nicht begonnen",
+                "noch nicht geschickt",
+                "noch nicht abgegeben",
+                "noch nicht erledigt",
+                "nicht fertiggestellt",
+                "nicht vorbereitet",
+                "nicht beantwortet",
+                "nicht geschrieben",
+                "nicht aufgeräumt",
+                "nicht sortiert",
+                "nicht begonnen",
+                "nicht geschickt",
+                "nicht abgegeben",
+                "nicht erledigt",
+                "nicht gemacht",
+                "nicht gelesen",
+                "nicht bezahlt",
+                "nicht gelernt",
+                "nicht geputzt",
+                "nicht gebucht",
+                "nicht angerufen",
+                "nicht gestartet",
+                "nicht trainiert"
+            ]
+
+            let lowercased = result.lowercased()
+            if let ending = endings.first(where: { lowercased.hasSuffix(" " + $0) || lowercased == $0 }) {
+                let removeCount = lowercased == ending ? ending.count : ending.count + 1
+                let end = result.index(result.endIndex, offsetBy: -removeCount)
+                result = String(result[..<end])
+            } else if let range = result.range(of: " nicht ", options: [.caseInsensitive, .backwards]) {
+                result = String(result[..<range.lowerBound])
+            }
+
+            return result.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        private static func looksLikeNounPhrase(_ text: String) -> Bool {
+            let lowercased = text.lowercased()
+            let starts = [
+                "der ",
+                "die ",
+                "das ",
+                "den ",
+                "dem ",
+                "ein ",
+                "eine ",
+                "einen ",
+                "meine ",
+                "meinen ",
+                "mein ",
+                "unsere ",
+                "unseren ",
+                "unser "
+            ]
+            return starts.contains { lowercased.hasPrefix($0) }
+        }
+
+        private static func subject(from object: String) -> String {
+            let replacements = [
+                ("den ", "Der "),
+                ("dem ", "Der "),
+                ("einen ", "Ein "),
+                ("meinen ", "Mein "),
+                ("deinen ", "Dein "),
+                ("unseren ", "Unser "),
+                ("die ", "Die "),
+                ("eine ", "Eine "),
+                ("meine ", "Meine "),
+                ("unsere ", "Unsere "),
+                ("das ", "Das "),
+                ("ein ", "Ein "),
+                ("mein ", "Mein "),
+                ("unser ", "Unser ")
+            ]
+
+            let lowercased = object.lowercased()
+            if let replacement = replacements.first(where: { lowercased.hasPrefix($0.0) }) {
+                let start = object.index(object.startIndex, offsetBy: replacement.0.count)
+                return replacement.1 + object[start...]
+            }
+
+            return object.capitalizedFirst
+        }
     }
 }
 
