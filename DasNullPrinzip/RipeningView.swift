@@ -55,14 +55,18 @@ struct RipeningView: View {
                     Text(task.title)
                         .font(.headline.weight(.black))
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("Reifegrad \(task.ripeness) %. Hat jemand noch einmal danach gefragt?")
+                    Text("Reifegrad \(task.ripeness) %. \(task.ripenessAside)")
                         .font(.subheadline)
                         .foregroundStyle(NullTheme.mutedInk)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .layoutPriority(1)
                 Spacer(minLength: 8)
-                StatusPill(title: task.status.title, symbol: task.status.symbol, tint: task.hasGoldenPatina ? NullTheme.gold : NullTheme.navy)
+                TaskStatusBadge(
+                    title: task.status.title,
+                    symbol: task.status.symbol,
+                    tint: task.hasGoldenPatina ? NullTheme.gold : NullTheme.navy
+                )
             }
 
             HStack(spacing: 8) {
@@ -156,6 +160,34 @@ private struct DurationPill: View {
             .background((isHighlighted ? NullTheme.gold : NullTheme.navy).opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             .accessibilityLabel("\(fullLabel) in diesem Zustand")
+    }
+}
+
+private struct TaskStatusBadge: View {
+    let title: String
+    let symbol: String
+    let tint: Color
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 6) {
+            Image(systemName: symbol)
+                .font(.caption.weight(.bold))
+                .frame(width: 13)
+
+            Text(title)
+                .font(.caption.weight(.bold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.82)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .multilineTextAlignment(.leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .frame(maxWidth: 164, alignment: .leading)
+        .foregroundStyle(tint)
+        .background(tint.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .accessibilityLabel(title)
     }
 }
 

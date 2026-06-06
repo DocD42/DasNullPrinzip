@@ -154,6 +154,11 @@ struct NullTask: Identifiable, Codable, Equatable {
         }
     }
 
+    var ripenessAside: String {
+        let seed = id.uuidString.unicodeScalars.reduce(0) { $0 + Int($1.value) }
+        return Self.ripenessAsides[seed % Self.ripenessAsides.count]
+    }
+
     var hasGoldenPatina: Bool {
         daysInCurrentStatus >= 30
     }
@@ -172,6 +177,17 @@ struct NullTask: Identifiable, Codable, Equatable {
         let longTermBonus = min(10, ageInDays / 30)
         return min(94, max(6, statusBase + timeBonus + longTermBonus))
     }
+
+    private static let ripenessAsides = [
+        "Hat jemand nachgehakt?",
+        "Blieb es still?",
+        "Kam dazu noch Post?",
+        "Wurde es vermisst?",
+        "War es wirklich dringend?",
+        "Rief die Realität an?",
+        "Ist es schon Geschichte?",
+        "Gab es echte Gefahr?"
+    ]
 }
 
 enum ExcuseMode: String, CaseIterable, Identifiable, Codable {
@@ -300,7 +316,7 @@ final class NullStore: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: persistenceKey),
            let state = try? JSONDecoder().decode(PersistedState.self, from: data) {
             self.habits = state.habits
-            self.tasks = state.tasks
+            self.tasks = Self.tasksWithPreviewPatina(state.tasks)
             self.challengeProgress = state.challengeProgress
             self.challengeCycle = state.challengeCycle ?? 0
             self.doNothingCount = state.doNothingCount
@@ -311,6 +327,18 @@ final class NullStore: ObservableObject {
             self.challengeCycle = 0
             self.doNothingCount = 0
         }
+    }
+
+    private static func tasksWithPreviewPatina(_ tasks: [NullTask]) -> [NullTask] {
+        var updatedTasks = tasks
+        guard let index = updatedTasks.firstIndex(where: { $0.title == "Steuerunterlagen sortieren" }),
+              updatedTasks[index].statusChangedAt == nil else {
+            return updatedTasks
+        }
+
+        updatedTasks[index].createdAt = Date.daysAgo(43)
+        updatedTasks[index].statusChangedAt = Date.daysAgo(32)
+        return updatedTasks
     }
 
     var totalPotentialityDays: Int {
