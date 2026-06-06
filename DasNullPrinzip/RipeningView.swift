@@ -50,24 +50,21 @@ struct RipeningView: View {
 
     private func taskCard(_ task: NullTask) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 10) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(task.title)
-                        .font(.headline.weight(.black))
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text("Äußere Abweichung \(task.ripeness) %. \(task.ripenessAside)")
-                        .font(.subheadline)
-                        .foregroundStyle(NullTheme.mutedInk)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .layoutPriority(1)
-                Spacer(minLength: 8)
-                TaskStatusBadge(
-                    title: task.status.title,
-                    symbol: task.status.symbol,
-                    tint: task.hasGoldenPatina ? NullTheme.gold : NullTheme.navy
-                )
+            VStack(alignment: .leading, spacing: 6) {
+                Text(task.title)
+                    .font(.headline.weight(.black))
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Äußere Abweichung \(task.ripeness) %. \(task.ripenessAside)")
+                    .font(.subheadline)
+                    .foregroundStyle(NullTheme.mutedInk)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+
+            TaskStatusBadge(
+                title: task.status.title,
+                symbol: task.status.symbol,
+                tint: task.hasGoldenPatina ? NullTheme.gold : NullTheme.navy
+            )
 
             HStack(spacing: 8) {
                 DurationPill(
@@ -171,19 +168,26 @@ private struct TaskStatusBadge: View {
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
             Image(systemName: symbol)
-                .font(.caption.weight(.bold))
-                .frame(width: 13)
+                .font(.headline.weight(.bold))
+                .frame(width: 22, height: 22)
 
-            Text(title)
-                .font(.caption.weight(.bold))
-                .lineLimit(2)
-                .minimumScaleFactor(0.82)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Status")
+                    .font(.caption2.weight(.black))
+                    .textCase(.uppercase)
+                    .foregroundStyle(tint.opacity(0.72))
+                Text(title)
+                    .font(.caption.weight(.black))
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.86)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .layoutPriority(1)
         }
         .multilineTextAlignment(.leading)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .frame(maxWidth: 164, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+        .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
         .foregroundStyle(tint)
         .background(tint.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))

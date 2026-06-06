@@ -11,10 +11,7 @@ struct DashboardView: View {
                     VStack(spacing: 16) {
                         hero
 
-                        HStack(spacing: 12) {
-                            NullMetric(value: "\(store.trackerDeviationScore) %", label: "Innere Abweichung", symbol: "lightbulb", tint: NullTheme.oxblood)
-                            NullMetric(value: "\(store.ripeningDeviationScore) %", label: "Äußere Abweichung", symbol: "tray", tint: NullTheme.navy)
-                        }
+                        scoreOverview
 
                         NullCard {
                             VStack(alignment: .leading, spacing: 8) {
@@ -98,6 +95,30 @@ struct DashboardView: View {
         }
     }
 
+    private var scoreOverview: some View {
+        HStack(spacing: 12) {
+            ScoreSummaryTile(
+                title: "Innen",
+                subtitle: "Ideenruhe",
+                score: store.trackerDeviationScore,
+                symbol: "lightbulb",
+                accent: NullTheme.gold,
+                fill: NullTheme.paper,
+                isDark: false
+            )
+
+            ScoreSummaryTile(
+                title: "Außen",
+                subtitle: "Druckpegel",
+                score: store.ripeningDeviationScore,
+                symbol: "tray",
+                accent: NullTheme.oxblood,
+                fill: NullTheme.navy,
+                isDark: true
+            )
+        }
+    }
+
     private var hero: some View {
         ZStack(alignment: .bottomLeading) {
             Image("BookCover")
@@ -154,6 +175,78 @@ struct DashboardView: View {
                 }
             }
         }
+    }
+}
+
+private struct ScoreSummaryTile: View {
+    let title: String
+    let subtitle: String
+    let score: Int
+    let symbol: String
+    let accent: Color
+    let fill: Color
+    let isDark: Bool
+
+    private var primary: Color {
+        isDark ? NullTheme.paper : NullTheme.ink
+    }
+
+    private var secondary: Color {
+        isDark ? NullTheme.paper.opacity(0.74) : NullTheme.mutedInk
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center) {
+                Image(systemName: symbol)
+                    .font(.headline.weight(.black))
+                    .foregroundStyle(accent)
+                    .frame(width: 30, height: 30)
+                    .background(accent.opacity(isDark ? 0.20 : 0.14))
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+
+                Spacer(minLength: 8)
+
+                Text("\(score)%")
+                    .font(.system(.title2, design: .serif).weight(.black))
+                    .foregroundStyle(primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption.weight(.black))
+                    .foregroundStyle(accent)
+                Text(subtitle)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(isDark ? NullTheme.paper.opacity(0.16) : accent.opacity(0.14))
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(accent)
+                        .frame(width: proxy.size.width * CGFloat(score) / 100)
+                }
+            }
+            .frame(height: 8)
+        }
+        .padding(13)
+        .frame(maxWidth: .infinity, minHeight: 126, alignment: .leading)
+        .background(fill)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(isDark ? NullTheme.paper.opacity(0.12) : accent.opacity(0.28), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(isDark ? 0.10 : 0.06), radius: 10, x: 0, y: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(score) Prozent Abweichung")
     }
 }
 

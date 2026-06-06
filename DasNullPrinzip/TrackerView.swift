@@ -38,17 +38,18 @@ struct TrackerView: View {
     }
 
     private var trackerIntro: some View {
-        NullCard(fill: NullTheme.navy) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("0%-Tracker")
-                    .font(.system(.title2, design: .serif).weight(.black))
-                Text("Innere Sicht: selbst gewählte Ideen und Challenges. Solange sie nur Idee bleiben, ist der Score vorbildlich niedrig.")
-                    .font(.subheadline)
-                    .foregroundStyle(NullTheme.paper.opacity(0.78))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .foregroundStyle(NullTheme.paper)
+        VStack(alignment: .leading, spacing: 8) {
+            StatusPill(title: "Innere Sicht", symbol: "lightbulb", tint: NullTheme.gold)
+            Text("0%-Tracker")
+                .font(.system(.title2, design: .serif).weight(.black))
+                .foregroundStyle(NullTheme.ink)
+            Text("Selbst gewählte Ideen und Challenges bleiben hier möglichst unberührt.")
+                .font(.subheadline)
+                .foregroundStyle(NullTheme.mutedInk)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 4)
     }
 
     private var trackerProgress: some View {
