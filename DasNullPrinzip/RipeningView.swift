@@ -9,17 +9,7 @@ struct RipeningView: View {
             NullScreen {
                 ScrollView {
                     LazyVStack(spacing: 12) {
-                        NullCard(fill: NullTheme.oxblood) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Strategisches Reifen")
-                                    .font(.system(.title2, design: .serif).weight(.black))
-                                Text("Manche Aufgaben lösen sich durch die professionelle Vermeidung vorschneller Intervention.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(NullTheme.paper.opacity(0.82))
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .foregroundStyle(NullTheme.paper)
-                        }
+                        ripeningIntro
 
                         ForEach(store.tasks) { task in
                             taskCard(task)
@@ -46,49 +36,151 @@ struct RipeningView: View {
         }
     }
 
+    private var ripeningIntro: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            StatusPill(title: "Prinzip", symbol: "hourglass", tint: NullTheme.oxblood)
+            Text("Aufgaben werden nicht erledigt. Sie reifen, bis die Realität sie übernimmt.")
+                .font(.system(.title3, design: .serif).weight(.bold))
+                .foregroundStyle(NullTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 4)
+    }
+
     private func taskCard(_ task: NullTask) -> some View {
-        NullCard {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(task.title)
-                            .font(.headline.weight(.black))
-                            .fixedSize(horizontal: false, vertical: true)
-                        Text("Reifegrad \(task.ripeness) %. Hat jemand noch einmal danach gefragt?")
-                            .font(.subheadline)
-                            .foregroundStyle(NullTheme.mutedInk)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    Spacer(minLength: 8)
-                    StatusPill(title: task.status.title, symbol: task.status.symbol, tint: NullTheme.navy)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(task.title)
+                        .font(.headline.weight(.black))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Reifegrad \(task.ripeness) %. Hat jemand noch einmal danach gefragt?")
+                        .font(.subheadline)
+                        .foregroundStyle(NullTheme.mutedInk)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .layoutPriority(1)
+                Spacer(minLength: 8)
+                StatusPill(title: task.status.title, symbol: task.status.symbol, tint: task.hasGoldenPatina ? NullTheme.gold : NullTheme.navy)
+            }
 
-                ProgressView(value: Double(task.ripeness), total: 100)
-                    .tint(NullTheme.oxblood)
+            HStack(spacing: 8) {
+                DurationPill(
+                    compactLabel: task.statusDurationCompactLabel,
+                    fullLabel: task.statusDurationLabel,
+                    isHighlighted: task.hasGoldenPatina
+                )
 
-                HStack(spacing: 10) {
-                    Button {
-                        store.advance(task: task)
-                    } label: {
-                        Label("Weiter reifen lassen", systemImage: "arrow.right")
-                            .font(.subheadline.weight(.bold))
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(NullTheme.ink)
-                    .disabled(task.status == .disappearedWithDignity)
-
-                    Button(role: .destructive) {
-                        store.deleteTask(task)
-                    } label: {
-                        Image(systemName: "trash")
-                            .frame(width: 38, height: 34)
-                    }
-                    .buttonStyle(.bordered)
-                    .accessibilityLabel("Aufgabe löschen")
+                if task.hasGoldenPatina {
+                    StatusPill(title: "Langzeitreife", symbol: "seal", tint: NullTheme.gold)
                 }
             }
+
+            RipenessBar(value: task.ripeness)
+
+            HStack(spacing: 10) {
+                Button {
+                    if task.canAdvance {
+                        store.advance(task: task)
+                    } else {
+                        store.regress(task: task)
+                    }
+                } label: {
+                    Label(task.canAdvance ? "Weiter reifen lassen" : "Zurückstufen", systemImage: task.canAdvance ? "arrow.right" : "arrow.uturn.backward")
+                        .font(.subheadline.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(NullTheme.paper)
+                .background(task.canAdvance ? NullTheme.oxblood : NullTheme.navy)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                if task.canAdvance, task.canRegress {
+                    Button {
+                        store.regress(task: task)
+                    } label: {
+                        Image(systemName: "arrow.left")
+                            .font(.headline.weight(.bold))
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(NullTheme.navy)
+                    .background(NullTheme.navy.opacity(0.10))
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .accessibilityLabel("Reife zurückstufen")
+                }
+
+                Button(role: .destructive) {
+                    store.deleteTask(task)
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.headline.weight(.bold))
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(NullTheme.oxblood)
+                .background(NullTheme.oxblood.opacity(0.10))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .accessibilityLabel("Aufgabe löschen")
+            }
         }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(NullTheme.paper)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(task.hasGoldenPatina ? NullTheme.gold : NullTheme.rule, lineWidth: task.hasGoldenPatina ? 2 : 1)
+        )
+        .shadow(color: .black.opacity(0.07), radius: 10, x: 0, y: 5)
+    }
+}
+
+private struct DurationPill: View {
+    let compactLabel: String
+    let fullLabel: String
+    let isHighlighted: Bool
+
+    var body: some View {
+        Label("Seit \(compactLabel)", systemImage: "timer")
+            .font(.caption.weight(.black))
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .foregroundStyle(isHighlighted ? NullTheme.gold : NullTheme.mutedInk)
+            .background((isHighlighted ? NullTheme.gold : NullTheme.navy).opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .accessibilityLabel("\(fullLabel) in diesem Zustand")
+    }
+}
+
+private struct RipenessBar: View {
+    let value: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(NullTheme.oxblood.opacity(0.12))
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(NullTheme.oxblood)
+                        .frame(width: proxy.size.width * CGFloat(value) / 100)
+                }
+            }
+            .frame(height: 10)
+
+            Text("100 % wäre Erledigung. Diese App endet vorher.")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(NullTheme.mutedInk)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Reifegrad \(value) Prozent")
     }
 }
 

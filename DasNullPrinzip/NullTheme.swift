@@ -8,6 +8,7 @@ enum NullTheme {
     static let oxblood = Color(red: 0.55, green: 0.10, blue: 0.08)
     static let navy = Color(red: 0.05, green: 0.13, blue: 0.18)
     static let sofaGray = Color(red: 0.47, green: 0.46, blue: 0.42)
+    static let gold = Color(red: 0.72, green: 0.50, blue: 0.18)
     static let rule = Color.black.opacity(0.16)
 }
 

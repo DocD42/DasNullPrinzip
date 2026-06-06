@@ -75,6 +75,18 @@ enum NullTaskStatus: String, CaseIterable, Codable, Identifiable {
         }
         return all[all.index(after: index)]
     }
+
+    var previous: NullTaskStatus {
+        let all = Self.allCases
+        guard let index = all.firstIndex(of: self), index > all.startIndex else {
+            return self
+        }
+        return all[all.index(before: index)]
+    }
+
+    var rank: Int {
+        Self.allCases.firstIndex(of: self) ?? 0
+    }
 }
 
 struct NullTask: Identifiable, Codable, Equatable {
@@ -82,20 +94,83 @@ struct NullTask: Identifiable, Codable, Equatable {
     var title: String
     var createdAt: Date
     var status: NullTaskStatus
+    var statusChangedAt: Date?
 
-    init(id: UUID = UUID(), title: String, createdAt: Date = Date(), status: NullTaskStatus = .new) {
+    init(
+        id: UUID = UUID(),
+        title: String,
+        createdAt: Date = Date(),
+        status: NullTaskStatus = .new,
+        statusChangedAt: Date? = nil
+    ) {
         self.id = id
         self.title = title
         self.createdAt = createdAt
         self.status = status
+        self.statusChangedAt = statusChangedAt ?? createdAt
     }
 
     var ageInDays: Int {
         Calendar.current.dateComponents([.day], from: createdAt.dnpStartOfDay, to: Date().dnpStartOfDay).day ?? 0
     }
 
+    var daysInCurrentStatus: Int {
+        Calendar.current.dateComponents([.day], from: currentStatusStartedAt.dnpStartOfDay, to: Date().dnpStartOfDay).day ?? 0
+    }
+
+    var currentStatusStartedAt: Date {
+        statusChangedAt ?? createdAt
+    }
+
+    var statusDurationLabel: String {
+        switch daysInCurrentStatus {
+        case 0:
+            "seit heute"
+        case 1:
+            "seit 1 Tag"
+        case 1..<30:
+            "seit \(daysInCurrentStatus) Tagen"
+        case 30..<60:
+            "seit 1 Monat"
+        case 60..<365:
+            "seit \(daysInCurrentStatus / 30) Monaten"
+        case 365..<730:
+            "seit 1 Jahr"
+        default:
+            "seit \(daysInCurrentStatus / 365) Jahren"
+        }
+    }
+
+    var statusDurationCompactLabel: String {
+        switch daysInCurrentStatus {
+        case 0:
+            "heute"
+        case 1..<30:
+            "\(daysInCurrentStatus) T"
+        case 30..<365:
+            "\(max(1, daysInCurrentStatus / 30)) M"
+        default:
+            "\(max(1, daysInCurrentStatus / 365)) J"
+        }
+    }
+
+    var hasGoldenPatina: Bool {
+        daysInCurrentStatus >= 30
+    }
+
+    var canAdvance: Bool {
+        status.next != status
+    }
+
+    var canRegress: Bool {
+        status.previous != status
+    }
+
     var ripeness: Int {
-        min(99, max(8, ageInDays * 7 + NullTaskStatus.allCases.firstIndex(of: status)! * 11))
+        let statusBase = 12 + status.rank * 12
+        let timeBonus = min(18, daysInCurrentStatus / 2)
+        let longTermBonus = min(10, ageInDays / 30)
+        return min(94, max(6, statusBase + timeBonus + longTermBonus))
     }
 }
 
@@ -282,7 +357,16 @@ final class NullStore: ObservableObject {
 
     func advance(task: NullTask) {
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        guard tasks[index].canAdvance else { return }
         tasks[index].status = tasks[index].status.next
+        tasks[index].statusChangedAt = Date()
+    }
+
+    func regress(task: NullTask) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        guard tasks[index].canRegress else { return }
+        tasks[index].status = tasks[index].status.previous
+        tasks[index].statusChangedAt = Date()
     }
 
     func deleteTask(_ task: NullTask) {
@@ -345,9 +429,9 @@ extension NullStore {
 
     static var seedTasks: [NullTask] {
         [
-            NullTask(title: "Keller aufräumen", createdAt: Date.daysAgo(11), status: .ripening),
-            NullTask(title: "Steuerunterlagen sortieren", createdAt: Date.daysAgo(24), status: .almostSolved),
-            NullTask(title: "LinkedIn weniger nutzen", createdAt: Date.daysAgo(4), status: .resting)
+            NullTask(title: "Keller aufräumen", createdAt: Date.daysAgo(11), status: .ripening, statusChangedAt: Date.daysAgo(6)),
+            NullTask(title: "Steuerunterlagen sortieren", createdAt: Date.daysAgo(43), status: .almostSolved, statusChangedAt: Date.daysAgo(32)),
+            NullTask(title: "LinkedIn weniger nutzen", createdAt: Date.daysAgo(4), status: .resting, statusChangedAt: Date.daysAgo(2))
         ]
     }
 }
