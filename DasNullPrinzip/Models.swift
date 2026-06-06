@@ -143,7 +143,28 @@ struct ChallengeDay: Identifiable {
     let title: String
     let line: String
 
-    static let all: [ChallengeDay] = [
+    static let dayCount = 30
+
+    static func days(for cycle: Int) -> [ChallengeDay] {
+        guard cycle > 0 else { return base }
+
+        var rotatedDays: [ChallengeDay] = []
+        let weekSize = 7
+
+        for start in stride(from: 0, to: base.count, by: weekSize) {
+            let end = min(start + weekSize, base.count)
+            let week = Array(base[start..<end])
+            let offset = cycle % week.count
+            let rotatedWeek = Array(week[offset...]) + Array(week[..<offset])
+            rotatedDays.append(contentsOf: rotatedWeek)
+        }
+
+        return rotatedDays.enumerated().map { index, day in
+            ChallengeDay(id: index + 1, title: day.title, line: day.line)
+        }
+    }
+
+    private static let base: [ChallengeDay] = [
         .init(id: 1, title: "Ziel anlegen", line: "Lege ein Ziel an. Beginne nicht."),
         .init(id: 2, title: "Sozialer Ertrag", line: "Erzähle jemandem von deinem Ziel. Das genügt."),
         .init(id: 3, title: "Notizbuch kaufen", line: "Kaufe ein Notizbuch. Schreibe nichts hinein."),
@@ -190,6 +211,10 @@ final class NullStore: ObservableObject {
         didSet { persist() }
     }
 
+    @Published var challengeCycle: Int {
+        didSet { persist() }
+    }
+
     @Published var doNothingCount: Int {
         didSet { persist() }
     }
@@ -202,11 +227,13 @@ final class NullStore: ObservableObject {
             self.habits = state.habits
             self.tasks = state.tasks
             self.challengeProgress = state.challengeProgress
+            self.challengeCycle = state.challengeCycle ?? 0
             self.doNothingCount = state.doNothingCount
         } else {
             self.habits = Self.seedHabits
             self.tasks = Self.seedTasks
             self.challengeProgress = []
+            self.challengeCycle = 0
             self.doNothingCount = 0
         }
     }
@@ -218,6 +245,14 @@ final class NullStore: ObservableObject {
     var dailyMantra: String {
         let index = (Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1) % Self.mantras.count
         return Self.mantras[index]
+    }
+
+    var challengeDays: [ChallengeDay] {
+        ChallengeDay.days(for: challengeCycle)
+    }
+
+    var isChallengeComplete: Bool {
+        challengeProgress.count >= ChallengeDay.dayCount
     }
 
     func registerDoNothing() {
@@ -262,11 +297,17 @@ final class NullStore: ObservableObject {
         }
     }
 
+    func restartChallenge() {
+        challengeProgress = []
+        challengeCycle += 1
+    }
+
     private func persist() {
         let state = PersistedState(
             habits: habits,
             tasks: tasks,
             challengeProgress: challengeProgress,
+            challengeCycle: challengeCycle,
             doNothingCount: doNothingCount
         )
         if let data = try? JSONEncoder().encode(state) {
@@ -279,6 +320,7 @@ private struct PersistedState: Codable {
     var habits: [NullHabit]
     var tasks: [NullTask]
     var challengeProgress: Set<Int>
+    var challengeCycle: Int?
     var doNothingCount: Int
 }
 
