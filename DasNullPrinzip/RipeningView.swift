@@ -38,8 +38,8 @@ struct RipeningView: View {
 
     private var ripeningIntro: some View {
         VStack(alignment: .leading, spacing: 8) {
-            StatusPill(title: "Prinzip", symbol: "hourglass", tint: NullTheme.oxblood)
-            Text("Aufgaben werden nicht erledigt. Sie reifen, bis die Realität sie übernimmt.")
+            StatusPill(title: "Äußere Sicht", symbol: "tray", tint: NullTheme.oxblood)
+            Text("Hier landen Aufgaben, die von außen an dich herangetragen wurden. Du beobachtest, wie stark sie vom 0%-Ideal abweichen.")
                 .font(.system(.title3, design: .serif).weight(.bold))
                 .foregroundStyle(NullTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
@@ -55,7 +55,7 @@ struct RipeningView: View {
                     Text(task.title)
                         .font(.headline.weight(.black))
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("Reifegrad \(task.ripeness) %. \(task.ripenessAside)")
+                    Text("Äußere Abweichung \(task.ripeness) %. \(task.ripenessAside)")
                         .font(.subheadline)
                         .foregroundStyle(NullTheme.mutedInk)
                         .fixedSize(horizontal: false, vertical: true)
@@ -91,7 +91,7 @@ struct RipeningView: View {
                         store.regress(task: task)
                     }
                 } label: {
-                    Label(task.canAdvance ? "Weiter reifen lassen" : "Zurückstufen", systemImage: task.canAdvance ? "arrow.right" : "arrow.uturn.backward")
+                    Label(task.canAdvance ? "Druck steigt" : "Zurückstufen", systemImage: task.canAdvance ? "arrow.right" : "arrow.uturn.backward")
                         .font(.subheadline.weight(.bold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
@@ -207,12 +207,12 @@ private struct RipenessBar: View {
             }
             .frame(height: 10)
 
-            Text("100 % wäre Erledigung. Diese App endet vorher.")
+            Text("Je voller der Balken, desto weiter weg von 0 %.")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(NullTheme.mutedInk)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Reifegrad \(value) Prozent")
+        .accessibilityLabel("Äußere Abweichung \(value) Prozent")
     }
 }
 
@@ -225,21 +225,21 @@ struct AddTaskSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Zum Beispiel: Keller aufräumen", text: $title)
+                    TextField("Zum Beispiel: Bericht abgeben", text: $title)
                 }
 
                 Section {
-                    Text("Neu eingegangen")
-                    Text("Liegt gut")
-                    Text("Reift")
-                    Text("Ohne Gesichtsverlust verschwunden")
+                    Text("Steuerunterlagen abgeben")
+                    Text("Team-Feedback beantworten")
+                    Text("Keller für Besuch aufräumen")
+                    Text("Rückruf erledigen")
                 } header: {
-                    Text("Statuslogik")
+                    Text("Geeignete Fremdaufgaben")
                 }
             }
             .scrollContentBackground(.hidden)
             .background(NullTheme.parchment)
-            .navigationTitle("Reifen lassen")
+            .navigationTitle("Fremdaufgabe reifen lassen")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Abbrechen") { dismiss() }

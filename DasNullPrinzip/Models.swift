@@ -1,17 +1,84 @@
 import Foundation
 
+enum NullIdeaStatus: String, CaseIterable, Codable, Identifiable {
+    case pureIdea
+    case considered
+    case prepared
+    case scheduled
+    case started
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .pureIdea: "Nur Idee"
+        case .considered: "Schon bedacht"
+        case .prepared: "Vorbereitet"
+        case .scheduled: "Eingeplant"
+        case .started: "Angefangen"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .pureIdea: "lightbulb"
+        case .considered: "eye"
+        case .prepared: "tray"
+        case .scheduled: "calendar"
+        case .started: "play.circle"
+        }
+    }
+
+    var next: NullIdeaStatus {
+        let all = Self.allCases
+        guard let index = all.firstIndex(of: self), index < all.index(before: all.endIndex) else {
+            return self
+        }
+        return all[all.index(after: index)]
+    }
+
+    var previous: NullIdeaStatus {
+        let all = Self.allCases
+        guard let index = all.firstIndex(of: self), index > all.startIndex else {
+            return self
+        }
+        return all[all.index(before: index)]
+    }
+
+    var score: Int {
+        let rank = Self.allCases.firstIndex(of: self) ?? 0
+        return rank * 25
+    }
+
+    var line: String {
+        switch self {
+        case .pureIdea: "Perfekt: Die Idee bleibt unversehrt im Kopf."
+        case .considered: "Achtung: gedankliche Nähe zur Umsetzung."
+        case .prepared: "Material ist schon gefährlich konkret."
+        case .scheduled: "Ein Termin ist fast schon ein Tatort."
+        case .started: "Akute Entfernung vom Null-Ideal."
+        }
+    }
+}
+
 struct NullHabit: Identifiable, Codable, Equatable {
     var id: UUID
     var title: String
     var createdAt: Date
-    var lastReassuredAt: Date?
+    var status: NullIdeaStatus?
     var notes: String
 
-    init(id: UUID = UUID(), title: String, createdAt: Date = Date(), lastReassuredAt: Date? = nil, notes: String = "") {
+    init(
+        id: UUID = UUID(),
+        title: String,
+        createdAt: Date = Date(),
+        status: NullIdeaStatus = .pureIdea,
+        notes: String = ""
+    ) {
         self.id = id
         self.title = title
         self.createdAt = createdAt
-        self.lastReassuredAt = lastReassuredAt
+        self.status = status
         self.notes = notes
     }
 
@@ -19,37 +86,36 @@ struct NullHabit: Identifiable, Codable, Equatable {
         Calendar.current.dateComponents([.day], from: createdAt.dnpStartOfDay, to: Date().dnpStartOfDay).day ?? 0
     }
 
-    var isReassuredToday: Bool {
-        guard let lastReassuredAt else { return false }
-        return Calendar.current.isDate(lastReassuredAt, inSameDayAs: Date())
+    var currentStatus: NullIdeaStatus {
+        status ?? .pureIdea
     }
 
-    var trackerStatusTitle: String {
-        isReassuredToday ? "Heute gesichert" : "Heute offen"
+    var deviation: Int {
+        currentStatus.score
     }
 
-    var trackerStatusSymbol: String {
-        isReassuredToday ? "checkmark.seal" : "hand.raised"
+    var canAdvance: Bool {
+        currentStatus.next != currentStatus
     }
 
-    var trackerLine: String {
-        if isReassuredToday {
-            "Dieser Nichtbeginn zahlt heute auf die Nullquote ein."
-        } else {
-            "Noch nicht für die heutige Nullquote bestätigt."
-        }
+    var canRegress: Bool {
+        currentStatus.previous != currentStatus
     }
 
     var milestone: String {
+        guard currentStatus == .pureIdea else {
+            return currentStatus.line
+        }
+
         switch daysUnstarted {
         case 100...:
-            "Du hast bewiesen, dass kurzfristige Motivation an dir abperlt."
+            return "Du hast bewiesen, dass kurzfristige Motivation an dir abperlt."
         case 30...:
-            "Diese Gewohnheit ist stabil nicht etabliert."
+            return "Diese Idee ist stabil nicht realisiert."
         case 7...:
-            "Weiterhin im Zustand reiner Potenzialität."
+            return "Weiterhin im Zustand reiner Potenzialität."
         default:
-            "Noch frisch. Bitte nicht durch Aktion gefährden."
+            return "Noch frisch. Bitte nicht durch Aktion gefährden."
         }
     }
 }
@@ -366,14 +432,25 @@ final class NullStore: ObservableObject {
         habits.reduce(0) { $0 + $1.daysUnstarted }
     }
 
-    var reassuredHabitsTodayCount: Int {
-        habits.filter(\.isReassuredToday).count
+    var trackerDeviationScore: Int {
+        averageScore(habits.map(\.deviation))
     }
 
-    var todayNullQuote: Int {
-        guard !habits.isEmpty else { return 0 }
-        let share = Double(reassuredHabitsTodayCount) / Double(habits.count)
-        return Int((share * 100).rounded())
+    var ripeningDeviationScore: Int {
+        averageScore(tasks.map(\.ripeness))
+    }
+
+    var totalDeviationScore: Int {
+        var scores: [Int] = []
+        if !habits.isEmpty { scores.append(trackerDeviationScore) }
+        if !tasks.isEmpty { scores.append(ripeningDeviationScore) }
+        return averageScore(scores)
+    }
+
+    private func averageScore(_ scores: [Int]) -> Int {
+        guard !scores.isEmpty else { return 0 }
+        let total = scores.reduce(0, +)
+        return Int((Double(total) / Double(scores.count)).rounded())
     }
 
     var dailyMantra: String {
@@ -399,9 +476,21 @@ final class NullStore: ObservableObject {
         habits.insert(NullHabit(title: trimmed), at: 0)
     }
 
-    func reassure(habit: NullHabit) {
+    func advanceIdea(_ habit: NullHabit) {
         guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
-        habits[index].lastReassuredAt = Date()
+        guard habits[index].canAdvance else { return }
+        habits[index].status = habits[index].currentStatus.next
+    }
+
+    func regressIdea(_ habit: NullHabit) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+        guard habits[index].canRegress else { return }
+        habits[index].status = habits[index].currentStatus.previous
+    }
+
+    func resetIdea(_ habit: NullHabit) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+        habits[index].status = .pureIdea
     }
 
     func deleteHabit(_ habit: NullHabit) {

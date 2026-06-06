@@ -27,7 +27,7 @@ struct TrackerView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    .accessibilityLabel("Gewohnheit hinzufügen")
+                    .accessibilityLabel("Idee hinzufügen")
                 }
             }
             .sheet(isPresented: $isAddingHabit) {
@@ -42,7 +42,7 @@ struct TrackerView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("0%-Tracker")
                     .font(.system(.title2, design: .serif).weight(.black))
-                Text("Hier liegen Vorhaben, die heute unangetastet bleiben. Reifen ist für Aufgaben, deren Status wandert.")
+                Text("Innere Sicht: selbst gewählte Ideen und Challenges. Solange sie nur Idee bleiben, ist der Score vorbildlich niedrig.")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.paper.opacity(0.78))
                     .fixedSize(horizontal: false, vertical: true)
@@ -56,20 +56,20 @@ struct TrackerView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Nullquote heute")
+                        Text("Innere Abweichung")
                             .font(.caption.weight(.black))
                             .foregroundStyle(NullTheme.oxblood)
-                        Text("\(store.todayNullQuote) %")
+                        Text("\(store.trackerDeviationScore) %")
                             .font(.system(.largeTitle, design: .serif).weight(.black))
                             .lineLimit(1)
                     }
                     Spacer(minLength: 8)
-                    StatusPill(title: "\(store.reassuredHabitsTodayCount)/\(store.habits.count)", symbol: "checkmark")
+                    StatusPill(title: "\(store.habits.count) Ideen", symbol: "lightbulb")
                 }
 
-                TrackerMeter(value: store.todayNullQuote)
+                TrackerMeter(value: store.trackerDeviationScore)
 
-                Text("Jede bestätigte Box erhöht die Tagesquote. Der Inhalt selbst bleibt natürlich bei 0 % Umsetzung.")
+                Text("0 % heißt: Idee bleibt Idee. Nachdenken, Vorbereiten, Einplanen und Anfangen ziehen dich Richtung 100 %.")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -85,13 +85,13 @@ struct TrackerView: View {
                         Text(habit.title)
                             .font(.headline.weight(.black))
                             .fixedSize(horizontal: false, vertical: true)
-                        Text(habit.milestone)
+                        Text("Abweichung \(habit.deviation) %. \(habit.milestone)")
                             .font(.subheadline)
                             .foregroundStyle(NullTheme.mutedInk)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 8)
-                    StatusPill(title: "\(habit.daysUnstarted) Tage", symbol: "moon")
+                    StatusPill(title: habit.currentStatus.title, symbol: habit.currentStatus.symbol, tint: habit.deviation == 0 ? NullTheme.navy : NullTheme.oxblood)
                 }
 
                 if !habit.notes.isEmpty {
@@ -100,18 +100,26 @@ struct TrackerView: View {
                         .foregroundStyle(NullTheme.mutedInk)
                 }
 
-                Text(habit.trackerLine)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(NullTheme.mutedInk)
-                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 8) {
+                    StatusPill(title: "\(habit.daysUnstarted) Tage ungestartet", symbol: "moon", tint: NullTheme.navy)
+                    if habit.deviation == 0 {
+                        StatusPill(title: "Ideal", symbol: "checkmark", tint: NullTheme.gold)
+                    }
+                }
+
+                TrackerMeter(value: habit.deviation)
 
                 HStack(spacing: 10) {
                     Button {
                         withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
-                            store.reassure(habit: habit)
+                            if habit.canAdvance {
+                                store.advanceIdea(habit)
+                            } else {
+                                store.resetIdea(habit)
+                            }
                         }
                     } label: {
-                        Label(habit.isReassuredToday ? "Heute gesichert" : "Heute nicht begonnen", systemImage: habit.trackerStatusSymbol)
+                        Label(habit.canAdvance ? "Richtung Anfang" : "Zurück auf 0 %", systemImage: habit.canAdvance ? "arrow.right" : "arrow.uturn.backward")
                             .font(.subheadline.weight(.bold))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -119,10 +127,27 @@ struct TrackerView: View {
                             .padding(.vertical, 11)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(habit.isReassuredToday ? NullTheme.navy : NullTheme.paper)
-                    .background(habit.isReassuredToday ? NullTheme.navy.opacity(0.10) : NullTheme.oxblood)
+                    .foregroundStyle(NullTheme.paper)
+                    .background(habit.canAdvance ? NullTheme.oxblood : NullTheme.navy)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .accessibilityLabel(habit.trackerStatusTitle)
+                    .accessibilityLabel(habit.canAdvance ? "Idee näher an den Anfang schieben" : "Idee auf null Prozent zurücksetzen")
+
+                    if habit.canAdvance, habit.canRegress {
+                        Button {
+                            withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                                store.regressIdea(habit)
+                            }
+                        } label: {
+                            Image(systemName: "arrow.left")
+                                .font(.headline.weight(.bold))
+                                .frame(width: 40, height: 40)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(NullTheme.navy)
+                        .background(NullTheme.navy.opacity(0.10))
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .accessibilityLabel("Idee weiter von der Umsetzung entfernen")
+                    }
 
                     Button(role: .destructive) {
                         store.deleteHabit(habit)
@@ -135,7 +160,7 @@ struct TrackerView: View {
                     .foregroundStyle(NullTheme.oxblood)
                     .background(NullTheme.oxblood.opacity(0.10))
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .accessibilityLabel("Gewohnheit löschen")
+                    .accessibilityLabel("Idee löschen")
                 }
             }
         }
@@ -156,7 +181,7 @@ private struct TrackerMeter: View {
             }
         }
         .frame(height: 10)
-        .accessibilityLabel("Nullquote \(value) Prozent")
+        .accessibilityLabel("Abweichung \(value) Prozent")
     }
 }
 
@@ -169,21 +194,21 @@ struct AddHabitSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Zum Beispiel: Meditation", text: $title)
+                    TextField("Zum Beispiel: Podcast anfangen", text: $title)
                 }
 
                 Section {
-                    Text("Joggen")
-                    Text("Spanisch lernen")
-                    Text("Buch schreiben")
-                    Text("Steuerunterlagen sortieren")
+                    Text("5-Uhr-Morgenroutine")
+                    Text("Podcast beginnen")
+                    Text("Romanprojekt starten")
+                    Text("KI-Kurs durcharbeiten")
                 } header: {
-                    Text("Geeignete Nichtbeginne")
+                    Text("Geeignete innere Vorhaben")
                 }
             }
             .scrollContentBackground(.hidden)
             .background(NullTheme.parchment)
-            .navigationTitle("Nicht beginnen")
+            .navigationTitle("Idee nicht beginnen")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Abbrechen") { dismiss() }

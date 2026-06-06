@@ -12,8 +12,8 @@ struct DashboardView: View {
                         hero
 
                         HStack(spacing: 12) {
-                            NullMetric(value: "\(store.todayNullQuote) %", label: "Nullquote heute", symbol: "percent", tint: NullTheme.oxblood)
-                            NullMetric(value: "\(store.totalPotentialityDays)", label: "Tage Potenzial", symbol: "sparkles", tint: NullTheme.navy)
+                            NullMetric(value: "\(store.trackerDeviationScore) %", label: "Innere Abweichung", symbol: "lightbulb", tint: NullTheme.oxblood)
+                            NullMetric(value: "\(store.ripeningDeviationScore) %", label: "Äußere Abweichung", symbol: "tray", tint: NullTheme.navy)
                         }
 
                         NullCard {
@@ -55,17 +55,17 @@ struct DashboardView: View {
 
                         VStack(spacing: 12) {
                             dashboardRow(
-                                title: "Nicht begonnen",
-                                value: store.habits.first?.title ?? "Neue Gewohnheit",
-                                detail: "\(store.reassuredHabitsTodayCount) von \(store.habits.count) Nichtbeginnen heute bestätigt",
-                                symbol: "square.dashed"
+                                title: "Innere Ideen",
+                                value: store.habits.first?.title ?? "Neue Idee",
+                                detail: "Selbst gestellte Vorhaben. Jede Konkretisierung schadet dem Score.",
+                                symbol: "lightbulb"
                             )
 
                             dashboardRow(
-                                title: "Strategisch reifend",
+                                title: "Äußere Aufgaben",
                                 value: store.tasks.first?.title ?? "Neue Aufgabe",
-                                detail: "Reifegrad \(store.tasks.first?.ripeness ?? 0) %",
-                                symbol: "archivebox"
+                                detail: "Von außen an dich herangetragen. Liegenlassen erzeugt Druck.",
+                                symbol: "tray"
                             )
 
                             dashboardRow(
@@ -100,12 +100,12 @@ struct DashboardView: View {
             )
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Heute: \(store.todayNullQuote) %")
+                Text("Gesamtscore: \(store.totalDeviationScore) %")
                     .font(.system(size: 40, weight: .black, design: .default))
                     .foregroundStyle(NullTheme.paper)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                Text("Nullquote aus dem Tracker. Umsetzung bleibt 0 %.")
+                Text("Ziel ist 0 %. Alles darüber riecht nach Wirklichkeit.")
                     .font(.headline.weight(.bold))
                     .foregroundStyle(NullTheme.paper.opacity(0.9))
             }
