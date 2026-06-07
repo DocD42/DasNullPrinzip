@@ -6,7 +6,7 @@ Die App parodiert Habit Tracker, Fokus-Apps, Journaling-Tools und Produktivität
 
 ## MVP
 
-- Heute-Dashboard mit Störgrad, Null-Spruch und Button `Nichts tun`
+- Heute-Dashboard mit Umsetzungsgefahr, Null-Spruch und Button `Nichts tun`
 - Nullstand-Tracker für nicht begonnene Gewohnheiten
 - Strategisches Reifen für Aufgaben
 - Ausreden-Generator mit mehreren Tonalitäten

@@ -70,7 +70,7 @@ struct DashboardView: View {
                 title: "Innere Ideen",
                 score: store.trackerDeviationScore,
                 value: store.habits.first?.title ?? "Neue Idee",
-                detail: "Selbst gestellt. Jede Konkretisierung erhöht den Störgrad und verlässt den Nullstand.",
+                detail: "Selbst gestellt. Jede Konkretisierung erhöht die Umsetzungsgefahr und verlässt den Nullstand.",
                 symbol: "lightbulb",
                 fill: NullTheme.paper,
                 accent: NullTheme.gold,
@@ -172,12 +172,12 @@ struct DashboardView: View {
             )
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Störgrad \(store.totalDeviationScore)")
+                Text("Umsetzungsgefahr \(store.totalDeviationScore)")
                     .font(.system(size: 40, weight: .black, design: .default))
                     .foregroundStyle(NullTheme.paper)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                Text("Ziel ist Nullstand. Jeder Punkt darüber riecht nach Wirklichkeit.")
+                Text("Ziel ist Nullstand. Jeder Punkt darüber riecht nach Handlung.")
                     .font(.headline.weight(.bold))
                     .foregroundStyle(NullTheme.paper.opacity(0.9))
             }
@@ -242,9 +242,11 @@ private struct ScoreSummaryTile: View {
                 VStack(alignment: .trailing, spacing: 0) {
                     Text("\(score)")
                         .font(.system(.title2, design: .serif).weight(.black))
-                    Text("Störgrad")
+                    Text("Umsetzungsgefahr")
                         .font(.caption2.weight(.black))
                         .foregroundStyle(secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
                 }
                 .foregroundStyle(primary)
                 .lineLimit(1)
@@ -283,7 +285,7 @@ private struct ScoreSummaryTile: View {
         )
         .shadow(color: .black.opacity(isDark ? 0.10 : 0.06), radius: 10, x: 0, y: 5)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title), Störgrad \(score) von hundert")
+        .accessibilityLabel("\(title), Umsetzungsgefahr \(score) von hundert")
     }
 }
 
@@ -332,11 +334,17 @@ private struct ScorePanel: View {
 
                 Spacer(minLength: 8)
 
-                Text("Störgrad \(score)")
-                    .font(.system(.title3, design: .serif).weight(.black))
-                    .foregroundStyle(primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.76)
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text("\(score)")
+                        .font(.system(.title3, design: .serif).weight(.black))
+                    Text("Umsetzungsgefahr")
+                        .font(.caption2.weight(.black))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+                .foregroundStyle(primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.76)
             }
 
             GeometryReader { proxy in
@@ -365,6 +373,6 @@ private struct ScorePanel: View {
         )
         .shadow(color: .black.opacity(isDark ? 0.11 : 0.07), radius: 10, x: 0, y: 5)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title), Störgrad \(score) von hundert")
+        .accessibilityLabel("\(title), Umsetzungsgefahr \(score) von hundert")
     }
 }

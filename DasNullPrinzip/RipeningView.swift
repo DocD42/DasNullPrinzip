@@ -54,7 +54,7 @@ struct RipeningView: View {
                 Text(task.title)
                     .font(.headline.weight(.black))
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Äußerer Störgrad \(task.ripeness). \(task.ripenessAside)")
+                Text("Äußere Umsetzungsgefahr \(task.ripeness). \(task.ripenessAside)")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -216,7 +216,7 @@ private struct RipenessBar: View {
                 .foregroundStyle(NullTheme.mutedInk)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Äußerer Störgrad \(value) von hundert")
+        .accessibilityLabel("Äußere Umsetzungsgefahr \(value) von hundert")
     }
 }
 

@@ -60,10 +60,10 @@ struct TrackerView: View {
                         Text("Innere Abweichung")
                             .font(.caption.weight(.black))
                             .foregroundStyle(NullTheme.oxblood)
-                        Text("Störgrad \(store.trackerDeviationScore)")
+                        Text("Umsetzungsgefahr \(store.trackerDeviationScore)")
                             .font(.system(.largeTitle, design: .serif).weight(.black))
                             .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                            .minimumScaleFactor(0.55)
                     }
                     Spacer(minLength: 8)
                     StatusPill(title: "\(store.habits.count) Ideen", symbol: "lightbulb")
@@ -71,7 +71,7 @@ struct TrackerView: View {
 
                 TrackerMeter(value: store.trackerDeviationScore)
 
-                Text("Nullstand heißt: Idee bleibt Idee. Nachdenken, Vorbereiten, Einplanen und Anfangen erhöhen den Störgrad.")
+                Text("Nullstand heißt: Idee bleibt Idee. Nachdenken, Vorbereiten, Einplanen und Anfangen erhöhen die Umsetzungsgefahr.")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -87,7 +87,7 @@ struct TrackerView: View {
                         Text(habit.title)
                             .font(.headline.weight(.black))
                             .fixedSize(horizontal: false, vertical: true)
-                        Text("Störgrad \(habit.deviation). \(habit.milestone)")
+                        Text("Umsetzungsgefahr \(habit.deviation). \(habit.milestone)")
                             .font(.subheadline)
                             .foregroundStyle(NullTheme.mutedInk)
                             .fixedSize(horizontal: false, vertical: true)
@@ -215,7 +215,7 @@ private struct TrackerMeter: View {
             }
         }
         .frame(height: 10)
-        .accessibilityLabel("Störgrad \(value) von hundert")
+        .accessibilityLabel("Umsetzungsgefahr \(value) von hundert")
     }
 }
 
