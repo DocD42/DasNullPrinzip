@@ -2,15 +2,15 @@
 
 Eine iPhone-first Begleit-App, die den satirischen Ratgeber **Das Null-Prinzip** inhaltlich unterstützt.
 
-Die App parodiert Habit Tracker, Fokus-Apps, Journaling-Tools und Produktivitätscoaches. Sie misst nicht Fortschritt, sondern Stabilität: nicht begonnene Gewohnheiten, strategisch reifende Aufgaben, Ausreden mit Management-Kompatibilität und eine 30-Tage-0%-Challenge.
+Die App parodiert Habit Tracker, Fokus-Apps, Journaling-Tools und Produktivitätscoaches. Sie misst nicht Fortschritt, sondern Stabilität: nicht begonnene Gewohnheiten, strategisch reifende Aufgaben, Ausreden mit Management-Kompatibilität und eine 30-Tage-Nullstand-Challenge.
 
 ## MVP
 
-- Heute-Dashboard mit 0%-Status, Null-Spruch und Button `Nichts tun`
-- 0%-Tracker für nicht begonnene Gewohnheiten
+- Heute-Dashboard mit Störgrad, Null-Spruch und Button `Nichts tun`
+- Nullstand-Tracker für nicht begonnene Gewohnheiten
 - Strategisches Reifen für Aufgaben
 - Ausreden-Generator mit mehreren Tonalitäten
-- 30-Tage-0%-Challenge
+- 30-Tage-Nullstand-Challenge
 - Teilen-Funktion für Ausreden
 
 ## Build

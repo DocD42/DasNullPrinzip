@@ -40,7 +40,7 @@ struct TrackerView: View {
     private var trackerIntro: some View {
         VStack(alignment: .leading, spacing: 8) {
             StatusPill(title: "Innere Sicht", symbol: "lightbulb", tint: NullTheme.gold)
-            Text("0%-Tracker")
+            Text("Nullstand-Tracker")
                 .font(.system(.title2, design: .serif).weight(.black))
                 .foregroundStyle(NullTheme.ink)
             Text("Selbst gewählte Ideen und Challenges bleiben hier möglichst unberührt.")
@@ -60,9 +60,10 @@ struct TrackerView: View {
                         Text("Innere Abweichung")
                             .font(.caption.weight(.black))
                             .foregroundStyle(NullTheme.oxblood)
-                        Text("\(store.trackerDeviationScore) %")
+                        Text("Störgrad \(store.trackerDeviationScore)")
                             .font(.system(.largeTitle, design: .serif).weight(.black))
                             .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                     Spacer(minLength: 8)
                     StatusPill(title: "\(store.habits.count) Ideen", symbol: "lightbulb")
@@ -70,7 +71,7 @@ struct TrackerView: View {
 
                 TrackerMeter(value: store.trackerDeviationScore)
 
-                Text("0 % heißt: Idee bleibt Idee. Nachdenken, Vorbereiten, Einplanen und Anfangen ziehen dich Richtung 100 %.")
+                Text("Nullstand heißt: Idee bleibt Idee. Nachdenken, Vorbereiten, Einplanen und Anfangen erhöhen den Störgrad.")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -86,7 +87,7 @@ struct TrackerView: View {
                         Text(habit.title)
                             .font(.headline.weight(.black))
                             .fixedSize(horizontal: false, vertical: true)
-                        Text("Abweichung \(habit.deviation) %. \(habit.milestone)")
+                        Text("Störgrad \(habit.deviation). \(habit.milestone)")
                             .font(.subheadline)
                             .foregroundStyle(NullTheme.mutedInk)
                             .fixedSize(horizontal: false, vertical: true)
@@ -108,7 +109,7 @@ struct TrackerView: View {
                 HStack(spacing: 8) {
                     StatusPill(title: "\(habit.daysUnstarted) Tage ungestartet", symbol: "moon", tint: NullTheme.navy)
                     if habit.deviation == 0 {
-                        StatusPill(title: "Ideal", symbol: "checkmark", tint: NullTheme.gold)
+                        StatusPill(title: "Nullstand", symbol: "checkmark", tint: NullTheme.gold)
                     }
                 }
 
@@ -124,7 +125,7 @@ struct TrackerView: View {
                             }
                         }
                     } label: {
-                        Label(habit.canAdvance ? "Wird konkret" : "Zurück auf 0 %", systemImage: habit.canAdvance ? "arrow.right" : "arrow.uturn.backward")
+                        Label(habit.canAdvance ? "Wird konkret" : "Zurück in den Nullstand", systemImage: habit.canAdvance ? "arrow.right" : "arrow.uturn.backward")
                             .font(.subheadline.weight(.bold))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -135,7 +136,7 @@ struct TrackerView: View {
                     .foregroundStyle(NullTheme.paper)
                     .background(habit.canAdvance ? NullTheme.oxblood : NullTheme.navy)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .accessibilityLabel(habit.canAdvance ? "Idee wird konkreter" : "Idee auf null Prozent zurücksetzen")
+                    .accessibilityLabel(habit.canAdvance ? "Idee wird konkreter" : "Idee in den Nullstand zurücksetzen")
 
                     if habit.canAdvance, habit.canRegress {
                         Button {
@@ -214,7 +215,7 @@ private struct TrackerMeter: View {
             }
         }
         .frame(height: 10)
-        .accessibilityLabel("Abweichung \(value) Prozent")
+        .accessibilityLabel("Störgrad \(value) von hundert")
     }
 }
 

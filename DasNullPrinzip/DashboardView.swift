@@ -70,7 +70,7 @@ struct DashboardView: View {
                 title: "Innere Ideen",
                 score: store.trackerDeviationScore,
                 value: store.habits.first?.title ?? "Neue Idee",
-                detail: "Selbst gestellt. Jede Konkretisierung zieht vom 0%-Ideal weg.",
+                detail: "Selbst gestellt. Jede Konkretisierung erhöht den Störgrad und verlässt den Nullstand.",
                 symbol: "lightbulb",
                 fill: NullTheme.paper,
                 accent: NullTheme.gold,
@@ -140,7 +140,7 @@ struct DashboardView: View {
                     VStack(alignment: .trailing, spacing: 0) {
                         Text("\(store.doNothingCount)")
                             .font(.system(.title2, design: .serif).weight(.black))
-                        Text("Nullakte")
+                Text("Nullakte")
                             .font(.caption2.weight(.black))
                             .foregroundStyle(NullTheme.mutedInk)
                     }
@@ -172,12 +172,12 @@ struct DashboardView: View {
             )
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Gesamtscore: \(store.totalDeviationScore) %")
+                Text("Störgrad \(store.totalDeviationScore)")
                     .font(.system(size: 40, weight: .black, design: .default))
                     .foregroundStyle(NullTheme.paper)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                Text("Ziel ist 0 %. Alles darüber riecht nach Wirklichkeit.")
+                Text("Ziel ist Nullstand. Jeder Punkt darüber riecht nach Wirklichkeit.")
                     .font(.headline.weight(.bold))
                     .foregroundStyle(NullTheme.paper.opacity(0.9))
             }
@@ -239,11 +239,16 @@ private struct ScoreSummaryTile: View {
 
                 Spacer(minLength: 8)
 
-                Text("\(score)%")
-                    .font(.system(.title2, design: .serif).weight(.black))
-                    .foregroundStyle(primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text("\(score)")
+                        .font(.system(.title2, design: .serif).weight(.black))
+                    Text("Störgrad")
+                        .font(.caption2.weight(.black))
+                        .foregroundStyle(secondary)
+                }
+                .foregroundStyle(primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -278,7 +283,7 @@ private struct ScoreSummaryTile: View {
         )
         .shadow(color: .black.opacity(isDark ? 0.10 : 0.06), radius: 10, x: 0, y: 5)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title), \(score) Prozent Abweichung")
+        .accessibilityLabel("\(title), Störgrad \(score) von hundert")
     }
 }
 
@@ -327,7 +332,7 @@ private struct ScorePanel: View {
 
                 Spacer(minLength: 8)
 
-                Text("\(score) %")
+                Text("Störgrad \(score)")
                     .font(.system(.title3, design: .serif).weight(.black))
                     .foregroundStyle(primary)
                     .lineLimit(1)
@@ -360,6 +365,6 @@ private struct ScorePanel: View {
         )
         .shadow(color: .black.opacity(isDark ? 0.11 : 0.07), radius: 10, x: 0, y: 5)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title), \(score) Prozent Abweichung")
+        .accessibilityLabel("\(title), Störgrad \(score) von hundert")
     }
 }

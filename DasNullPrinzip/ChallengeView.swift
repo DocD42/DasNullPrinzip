@@ -14,7 +14,7 @@ struct ChallengeView: View {
                         LazyVStack(spacing: 12) {
                             NullCard(fill: NullTheme.navy) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("30-Tage-0%-Challenge")
+                                    Text("30-Tage-Nullstand-Challenge")
                                         .font(.system(.title2, design: .serif).weight(.black))
                                     Text("Jeden Tag verhinderst du, dass aus Absicht Belastung wird.")
                                         .font(.subheadline)
@@ -115,7 +115,7 @@ private struct ChallengeCompletionSheet: View {
                     Spacer(minLength: 20)
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("30 Tage. 0 % Fortschritt.")
+                        Text("30 Tage im Nullstand.")
                             .font(.system(.largeTitle, design: .serif).weight(.black))
                             .fixedSize(horizontal: false, vertical: true)
                         Text("Du hast verhindert, dass aus Absicht Belastung wird. Das Null-Prinzip wirkt.")

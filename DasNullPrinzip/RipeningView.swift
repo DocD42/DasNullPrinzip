@@ -39,7 +39,7 @@ struct RipeningView: View {
     private var ripeningIntro: some View {
         VStack(alignment: .leading, spacing: 8) {
             StatusPill(title: "Äußere Sicht", symbol: "tray", tint: NullTheme.oxblood)
-            Text("Hier landen Aufgaben, die von außen an dich herangetragen wurden. Du beobachtest, wie stark sie vom 0%-Ideal abweichen.")
+            Text("Hier landen Aufgaben, die von außen an dich herangetragen wurden. Du beobachtest, wie stark sie den Nullstand stören.")
                 .font(.system(.title3, design: .serif).weight(.bold))
                 .foregroundStyle(NullTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
@@ -54,7 +54,7 @@ struct RipeningView: View {
                 Text(task.title)
                     .font(.headline.weight(.black))
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Äußere Abweichung \(task.ripeness) %. \(task.ripenessAside)")
+                Text("Äußerer Störgrad \(task.ripeness). \(task.ripenessAside)")
                     .font(.subheadline)
                     .foregroundStyle(NullTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -211,12 +211,12 @@ private struct RipenessBar: View {
             }
             .frame(height: 10)
 
-            Text("Je voller der Balken, desto weiter weg von 0 %.")
+            Text("Je voller der Balken, desto weiter weg vom Nullstand.")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(NullTheme.mutedInk)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Äußere Abweichung \(value) Prozent")
+        .accessibilityLabel("Äußerer Störgrad \(value) von hundert")
     }
 }
 

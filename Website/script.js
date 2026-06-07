@@ -12,7 +12,12 @@ const doNothingCount = document.querySelector("#doNothingCount");
 let nullActs = Number.parseInt(localStorage.getItem("nullActs") || "0", 10);
 
 function renderNullActs() {
-  const label = nullActs === 1 ? "1 Nullakt" : `${nullActs} Nullakte`;
+  let label = "Keine Nullakte";
+  if (nullActs === 1) {
+    label = "1 Nullakt";
+  } else if (nullActs > 1) {
+    label = `${nullActs} Nullakte`;
+  }
   doNothingCount.textContent = label;
 }
 

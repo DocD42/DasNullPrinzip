@@ -17,7 +17,7 @@ Das wäre als Satire stark und als App tatsächlich nutzbar.
 
 Die zentralen Features
 
-1. Der 0%-Tracker
+1. Der Nullstand-Tracker
 
 Ein klassischer Habit Tracker, nur umgedreht.
 
@@ -217,7 +217,7 @@ Null-Coach: „Oder du könntest zunächst prüfen, ob dein Leben diesen Änderu
 
 Dieser Coach darf nicht therapeutisch auftreten. Er ist satirisch, aber freundlich. Eine Art höflicher Butler der gepflegten Untätigkeit.
 
-10. Die 0%-Challenge
+10. Die Nullstand-Challenge
 
 Eine 30-Tage-Challenge, bei der man jeden Tag nichts tun soll.
 
@@ -272,11 +272,11 @@ MVP-Version
 
 Für eine erste Version würde ich es schlank halten:
 
-0%-Tracker
+Nullstand-Tracker
 Ausreden-Generator
 Strategisches Reifen
 Täglicher Null-Spruch
-30-Tage-0%-Challenge
+30-Tage-Nullstand-Challenge
 Teilen-Funktion für absurde Ausreden und Erfolge
 
 Das reicht für eine starke erste App. Die Kalender- und Mail-Features wären später reizvoll, aber sie erhöhen Komplexität, Datenschutzaufwand und Integrationsbedarf.
@@ -285,7 +285,7 @@ Beispiel für die Startseite
 
 Oben:
 
-Heute: 0 % Fortschritt
+Heute: Nullstand stabil
 
 Darunter:
 
