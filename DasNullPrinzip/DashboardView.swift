@@ -40,7 +40,7 @@ struct DashboardView: View {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text("Erfolgreich.")
                                             .font(.headline.weight(.black))
-                                        Text("Du hast verhindert, dass aus Absicht Belastung wird.")
+                                        Text(store.doNothingConfirmation)
                                             .font(.subheadline)
                                             .foregroundStyle(NullTheme.paper.opacity(0.78))
                                     }
@@ -53,12 +53,7 @@ struct DashboardView: View {
                         VStack(spacing: 12) {
                             perspectiveCards
 
-                            dashboardRow(
-                                title: "Nichtstun registriert",
-                                value: "\(store.doNothingCount) mal",
-                                detail: "Jede Wiederholung erhöht die Stabilität.",
-                                symbol: "chart.line.flattrend.xyaxis"
-                            )
+                            doNothingCard
                         }
                     }
                     .padding(16)
@@ -119,6 +114,48 @@ struct DashboardView: View {
         }
     }
 
+    private var doNothingCard: some View {
+        NullCard {
+            VStack(alignment: .leading, spacing: 13) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "hand.raised.fill")
+                        .font(.title2.weight(.black))
+                        .foregroundStyle(NullTheme.oxblood)
+                        .frame(width: 36, height: 36)
+                        .background(NullTheme.oxblood.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Nichtstun-Konto")
+                            .font(.caption.weight(.black))
+                            .foregroundStyle(NullTheme.oxblood)
+                        Text(store.doNothingRankTitle)
+                            .font(.headline.weight(.black))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .layoutPriority(1)
+
+                    Spacer(minLength: 8)
+
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("\(store.doNothingCount)")
+                            .font(.system(.title2, design: .serif).weight(.black))
+                        Text("Nullakte")
+                            .font(.caption2.weight(.black))
+                            .foregroundStyle(NullTheme.mutedInk)
+                    }
+                }
+
+                DoNothingMeter(value: store.doNothingLevelProgress)
+
+                Text(store.doNothingRankDetail)
+                    .font(.subheadline)
+                    .foregroundStyle(NullTheme.mutedInk)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
     private var hero: some View {
         ZStack(alignment: .bottomLeading) {
             Image("BookCover")
@@ -153,28 +190,23 @@ struct DashboardView: View {
         )
     }
 
-    private func dashboardRow(title: String, value: String, detail: String, symbol: String) -> some View {
-        NullCard {
-            HStack(alignment: .top, spacing: 14) {
-                Image(systemName: symbol)
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(NullTheme.oxblood)
-                    .frame(width: 34, height: 34)
+}
 
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(title)
-                        .font(.caption.weight(.black))
-                        .foregroundStyle(NullTheme.oxblood)
-                    Text(value)
-                        .font(.headline.weight(.black))
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text(detail)
-                        .font(.subheadline)
-                        .foregroundStyle(NullTheme.mutedInk)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+private struct DoNothingMeter: View {
+    let value: Int
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(NullTheme.oxblood.opacity(0.12))
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(NullTheme.oxblood)
+                    .frame(width: proxy.size.width * CGFloat(value) / 100)
             }
         }
+        .frame(height: 10)
+        .accessibilityLabel("Stufenfortschritt \(value) Prozent")
     }
 }
 

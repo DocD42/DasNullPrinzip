@@ -454,8 +454,39 @@ final class NullStore: ObservableObject {
     }
 
     var dailyMantra: String {
-        let index = (Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1) % Self.mantras.count
+        let day = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
+        let index = (day + doNothingCount) % Self.mantras.count
         return Self.mantras[index]
+    }
+
+    var doNothingRankTitle: String {
+        Self.doNothingLevel(for: doNothingCount).title
+    }
+
+    var doNothingRankDetail: String {
+        guard let nextTarget = Self.nextDoNothingTarget(after: doNothingCount) else {
+            return "Weitere Klicks werden selbstverständlich entgegengenommen, aber nicht überbewertet."
+        }
+
+        let missing = nextTarget - doNothingCount
+        let pluralizedClick = missing == 1 ? "Klick" : "Klicks"
+        return "Noch \(missing) \(pluralizedClick) bis: \(Self.doNothingLevel(for: nextTarget).title)."
+    }
+
+    var doNothingLevelProgress: Int {
+        guard let nextTarget = Self.nextDoNothingTarget(after: doNothingCount) else { return 100 }
+        let previousTarget = Self.previousDoNothingTarget(before: nextTarget)
+        let span = max(1, nextTarget - previousTarget)
+        let current = max(0, doNothingCount - previousTarget)
+        return min(100, Int((Double(current) / Double(span) * 100).rounded()))
+    }
+
+    var doNothingConfirmation: String {
+        if doNothingCount == 1 {
+            return "Der erste Nullakt wurde ohne erkennbare Folgen verbucht."
+        }
+
+        return "\(doNothingCount) Nullakte. \(doNothingRankTitle) bleibt aktenkundig."
     }
 
     var challengeDays: [ChallengeDay] {
@@ -564,8 +595,34 @@ extension NullStore {
         "Wer noch vergleicht, hat noch nicht versagt.",
         "Bitte zerstöre dein Möglichkeitsfeld nicht durch Handeln.",
         "Heute ist ein guter Tag, um später ein guter Tag zu sein.",
-        "Du bist nicht unproduktiv. Du bist risikobewusst."
+        "Du bist nicht unproduktiv. Du bist risikobewusst.",
+        "Jeder Anfang ist ein unnötiges Risiko.",
+        "Die Lage bleibt unterlassungssicher.",
+        "Nichtstun ist auch eine Form der Datenpflege."
     ]
+
+    private static let doNothingLevels: [(target: Int, title: String)] = [
+        (0, "Noch unberührt"),
+        (1, "Erster Nullakt"),
+        (3, "Stabile Inaktivität"),
+        (7, "Wöchentliche Auslassung"),
+        (14, "Amtlich ausbleibend"),
+        (30, "Null-Routine"),
+        (50, "Fortgeschrittene Wirkungslosigkeit"),
+        (100, "Meisterklasse der Auslassung")
+    ]
+
+    private static func doNothingLevel(for count: Int) -> (target: Int, title: String) {
+        doNothingLevels.last(where: { count >= $0.target }) ?? doNothingLevels[0]
+    }
+
+    private static func nextDoNothingTarget(after count: Int) -> Int? {
+        doNothingLevels.first(where: { count < $0.target })?.target
+    }
+
+    private static func previousDoNothingTarget(before target: Int) -> Int {
+        doNothingLevels.last(where: { $0.target < target })?.target ?? 0
+    }
 
     static var seedHabits: [NullHabit] {
         [
@@ -630,10 +687,16 @@ enum ExcuseFactory {
             }
 
             if let plan = Self.planFromIntentionSentence(cleaned) {
-                let wrapped = "das Vorhaben „\(plan)“"
-                self.object = wrapped
-                self.subject = Self.subject(from: wrapped)
-                self.context = wrapped
+                if Self.looksLikeNounPhrase(plan) {
+                    self.object = plan
+                    self.subject = Self.subject(from: plan)
+                    self.context = plan
+                } else {
+                    let wrapped = "das Vorhaben „\(plan)“"
+                    self.object = wrapped
+                    self.subject = Self.subject(from: wrapped)
+                    self.context = wrapped
+                }
                 return
             }
 
@@ -785,6 +848,9 @@ enum ExcuseFactory {
                 "ein ",
                 "eine ",
                 "einen ",
+                "deine ",
+                "deinen ",
+                "dein ",
                 "meine ",
                 "meinen ",
                 "mein ",
@@ -805,9 +871,11 @@ enum ExcuseFactory {
                 ("unseren ", "Unser "),
                 ("die ", "Die "),
                 ("eine ", "Eine "),
+                ("deine ", "Deine "),
                 ("meine ", "Meine "),
                 ("unsere ", "Unsere "),
                 ("das ", "Das "),
+                ("dein ", "Dein "),
                 ("ein ", "Ein "),
                 ("mein ", "Mein "),
                 ("unser ", "Unser ")
