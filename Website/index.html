@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Das Null-Prinzip</title>
+  <meta name="description" content="Das Null-Prinzip: Minimaler Aufwand. Maximale Ausrede. Satirisches Sachbuch und begleitende Anti-Produktivitäts-App.">
+  <meta name="theme-color" content="#f3ead8">
+  <meta property="og:title" content="Das Null-Prinzip">
+  <meta property="og:description" content="Die erste App, die dich nicht verbessern will.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/book-cover.png">
+  <link rel="icon" href="assets/book-cover.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header" aria-label="Hauptnavigation">
+    <a class="brand" href="#top" aria-label="Das Null-Prinzip Startseite">
+      <span class="brand-mark">0%</span>
+      <span>Das Null-Prinzip</span>
+    </a>
+    <nav>
+      <a href="#buch">Buch</a>
+      <a href="#app">App</a>
+      <a href="#ausreden">Ausreden</a>
+      <a href="#status">Status</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-cover" src="assets/book-cover.png" alt="Buchcover Das Null-Prinzip">
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow">Satirisches Sachbuch + App</p>
+        <h1 id="hero-title">Das Null-Prinzip</h1>
+        <p class="claim">Minimaler Aufwand. Maximale Ausrede.</p>
+        <p class="intro">Ein freundlicher Gegenentwurf zur Selbstoptimierung: für alle, die genug Ziele haben und trotzdem gern professionell wirken.</p>
+        <div class="hero-actions" aria-label="Schnellzugriffe">
+          <a class="button primary" href="#ausreden">Ausrede testen</a>
+          <a class="button secondary" href="#app">App ansehen</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Null-Prinzip Leitsatz">
+      <p>Heute schon erfolgreich nichts verbessert?</p>
+      <button id="doNothingButton" type="button">Nichts tun</button>
+      <span id="doNothingCount" aria-live="polite">0 Nullakte</span>
+    </section>
+
+    <section id="buch" class="section book-section" aria-labelledby="book-title">
+      <div class="section-kicker">Das Buch</div>
+      <div class="split">
+        <div>
+          <h2 id="book-title">Ein Sachbuch gegen den Zwang, aus allem ein Projekt zu machen.</h2>
+          <p>Das Null-Prinzip nimmt Habit Tracker, Kalender-Coaches, Purpose-Sprache und digitale Selbstverbesserung ernst genug, um sie sehr unernst zu behandeln.</p>
+          <p>Es ist kein Ratgeber. Es ist ein sauber gebundener Antrag auf Entlastung.</p>
+        </div>
+        <ul class="proof-list" aria-label="Null-Prinzip Versprechen">
+          <li><span>01</span> Weniger schlechtes Gewissen durch bessere Begriffe.</li>
+          <li><span>02</span> Mehr Stabilität im Zustand reiner Möglichkeit.</li>
+          <li><span>03</span> Ausreden, die klingen, als hätten sie ein Budget.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="app" class="section app-section" aria-labelledby="app-title">
+      <div class="section-kicker">Die App</div>
+      <div class="app-grid">
+        <article class="app-panel lead-panel">
+          <p class="mini-label">iPhone zuerst</p>
+          <h2 id="app-title">Die erste App, die dich nicht verbessern will.</h2>
+          <p>Sie misst nicht Fortschritt, sondern Abweichung vom 0%-Ideal. Je mehr du anfängst, desto schlechter wird der Score. Endlich eine App mit Prinzipien.</p>
+        </article>
+        <article class="app-panel dark">
+          <span class="panel-icon">0%</span>
+          <h3>0%-Tracker</h3>
+          <p>Innere Ideen bleiben in einem schönen, unbeschädigten Vorher-Zustand.</p>
+        </article>
+        <article class="app-panel red">
+          <span class="panel-icon">...</span>
+          <h3>Strategisches Reifen</h3>
+          <p>Äußere Aufgaben werden so lange beobachtet, bis die Wirklichkeit selbst nervös wird.</p>
+        </article>
+        <article class="app-panel gold">
+          <span class="panel-icon">30</span>
+          <h3>0%-Challenge</h3>
+          <p>Dreißig Tage, in denen Nichtbeginn endlich die Anerkennung bekommt, die er verdient.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="ausreden" class="section lab-section" aria-labelledby="excuse-title">
+      <div class="lab-copy">
+        <div class="section-kicker">Ausreden-Generator</div>
+        <h2 id="excuse-title">Sag, was du nicht getan hast. Die Website macht daraus Haltung.</h2>
+        <p>Der echte Generator lebt in der App. Diese kleine Probe bleibt lokal im Browser und zeigt die Richtung: aus Nichtumsetzung wird anschlussfähige Begründung.</p>
+      </div>
+
+      <div class="excuse-lab" aria-label="Ausreden Generator Probe">
+        <label for="excuseInput">Nicht getan</label>
+        <textarea id="excuseInput" rows="4">Ich habe den Keller nicht aufgeräumt.</textarea>
+
+        <div class="mode-row" role="group" aria-label="Ausredenmodus">
+          <button class="mode-button active" type="button" data-mode="corporate">Corporate</button>
+          <button class="mode-button" type="button" data-mode="achtsam">Achtsam</button>
+          <button class="mode-button" type="button" data-mode="paar">Paargeeignet</button>
+        </div>
+
+        <button id="generateExcuse" class="button primary wide" type="button">Ausrede erzeugen</button>
+        <output id="excuseOutput" class="excuse-output" for="excuseInput">Ich habe den Keller bewusst zurückgestellt, um die strategische Aussagequalität nicht durch operative Hast zu gefährden.</output>
+      </div>
+    </section>
+
+    <section id="status" class="section status-section" aria-labelledby="status-title">
+      <div>
+        <div class="section-kicker">Status</div>
+        <h2 id="status-title">Buch und App befinden sich in kontrollierter Annäherung an die Wirklichkeit.</h2>
+      </div>
+      <div class="status-board">
+        <div>
+          <strong>Buch</strong>
+          <span>Veröffentlichung in Vorbereitung</span>
+        </div>
+        <div>
+          <strong>iPhone-App</strong>
+          <span>Prototyp läuft lokal</span>
+        </div>
+        <div>
+          <strong>Website</strong>
+          <span>Minimal wirksam</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Das Null-Prinzip</p>
+    <nav aria-label="Footer">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
