@@ -646,7 +646,7 @@ enum ExcuseFactory {
         let topic = ExcuseTopic(rawTopic)
 
         if topic.usesGenericFallback {
-            return genericFallback(for: mode)
+            return genericFallback(for: mode, seed: rawTopic)
         }
 
         switch mode {
@@ -669,25 +669,100 @@ enum ExcuseFactory {
         }
     }
 
-    private static func genericFallback(for mode: ExcuseMode) -> String {
+    private static func genericFallback(for mode: ExcuseMode, seed: String) -> String {
+        let variants: [String]
+
         switch mode {
         case .corporate:
-            return "Ich habe den Vorgang in eine strategische Schwebephase überführt, damit operative Klarheit nicht versehentlich als Zusage missverstanden wird."
+            variants = [
+                "Ich habe den Vorgang in eine strategische Schwebephase überführt, damit operative Klarheit nicht versehentlich als Zusage missverstanden wird.",
+                "Die Angelegenheit wurde in den Vorhof der Umsetzung verschoben, wo sie ohne unnötige Haftung weiter atmen kann.",
+                "Ich habe entschieden, die operative Sichtbarkeit vorerst zu reduzieren, um dem Vorgang keine falsche Reife zu unterstellen.",
+                "Der Sachstand bleibt bewusst unterhalb der Handlungsschwelle, weil frühe Bewegung oft nur Berichtspflichten erzeugt.",
+                "Ich habe die Initiative in eine kontrollierte Nichteskalation überführt und damit die Organisation vor Aktionismus geschützt.",
+                "Der Vorgang befindet sich in einem belastbaren Schwebezustand, der momentan mehr Governance erzeugt als Umsetzung."
+            ]
         case .mindful:
-            return "Ich habe gespürt, dass Handlung heute zu viel Außenkontakt mit der Wirklichkeit erzeugt hätte, und bin deshalb achtsam im Ungefähren geblieben."
+            variants = [
+                "Ich habe gespürt, dass Handlung heute zu viel Außenkontakt mit der Wirklichkeit erzeugt hätte, und bin deshalb achtsam im Ungefähren geblieben.",
+                "Mein inneres System hat sehr leise Nein gesagt, und ich wollte diese Stille nicht durch Ergebnisse stören.",
+                "Ich habe den Impuls begrüßt, ihm Tee angeboten und ihn dann ohne weitere Erwartungen ziehen lassen.",
+                "Die Situation wollte heute mehr gehalten als gelöst werden; ich habe mich dieser zarten Unschärfe geöffnet.",
+                "Ich habe meiner Handlungsenergie erlaubt, kurz aufzutauchen und dann wieder in ihren natürlichen Ruhezustand zu sinken.",
+                "Es fühlte sich stimmiger an, die Möglichkeit nicht zu verbrauchen, sondern sie atmend im Raum stehen zu lassen."
+            ]
         case .financiallyPrudent:
-            return "Ich habe die Umsetzung als nicht aktivierte Aufmerksamkeitsreserve bilanziert und damit unnötige Folgekosten vermieden."
+            variants = [
+                "Ich habe die Umsetzung als nicht aktivierte Aufmerksamkeitsreserve bilanziert und damit unnötige Folgekosten vermieden.",
+                "Eine Realisierung hätte sofort emotionale Betriebskosten ausgelöst; ich habe daher liquiditätsschonend nicht gehandelt.",
+                "Ich habe den Aufwand nicht abgeschrieben, sondern elegant in die stille Reserve der Möglichkeiten umgebucht.",
+                "Die Rendite des Aufschubs war unter Berücksichtigung der Nebenkosten heute eindeutig attraktiver.",
+                "Ich habe die Handlungskosten gegen den Nutzen der Untätigkeit gerechnet und kam zu einem erfreulich leeren Ergebnis.",
+                "Die Option bleibt im Portfolio, ohne durch Ausführung an Wert oder Ausredepotenzial zu verlieren."
+            ]
         case .stoic:
-            return "Was nicht eindeutig getan werden will, darf in Würde ungeschehen bleiben. Ich habe mich dieser Ordnung nicht widersetzt."
+            variants = [
+                "Was nicht eindeutig getan werden will, darf in Würde ungeschehen bleiben. Ich habe mich dieser Ordnung nicht widersetzt.",
+                "Ich habe den Dingen erlaubt, nicht durch mich gestört zu werden. Das ist selten spektakulär, aber oft korrekt.",
+                "Wenn der Kosmos Handlung gewollt hätte, hätte er weniger Nebenbedingungen geliefert.",
+                "Ich habe die Lage betrachtet, ihre Vergänglichkeit erkannt und auf den Rest verzichtet.",
+                "Nicht jede Möglichkeit verdient den Lärm ihrer Verwirklichung. Ich habe deshalb still zugestimmt.",
+                "Der Tag bot Gelegenheit zur Tat; ich bot ihm Gelassenheit zurück."
+            ]
         case .therapeutic:
-            return "Ich habe den Impuls nicht unterdrückt, sondern ihm einen geschützten Raum gegeben, in dem er ohne Leistungsdruck verschwinden durfte."
+            variants = [
+                "Ich habe den Impuls nicht unterdrückt, sondern ihm einen geschützten Raum gegeben, in dem er ohne Leistungsdruck verschwinden durfte.",
+                "Die Angelegenheit zeigte deutliche Anzeichen von Umsetzungsangst; ich habe sie nicht retraumatisiert.",
+                "Ich wollte den inneren Anteil, der etwas leisten sollte, heute nicht erneut in Funktionalität drängen.",
+                "Zwischen Absicht und Handlung liegt ein sensibles Beziehungsgeschehen, das nicht durch Ergebnisse verkürzt werden sollte.",
+                "Ich habe die Erwartung validiert, ohne ihr die Macht zu geben, meinen Nachmittag zu strukturieren.",
+                "Der Prozess brauchte weniger Lösung und mehr liebevolle Nichtintervention."
+            ]
         case .boardSafe:
-            return "Die Lage wurde in einen ergebnisoffenen Prüfzustand versetzt. Eine voreilige Entscheidung hätte nur unnötige Zuständigkeiten erzeugt."
+            variants = [
+                "Die Lage wurde in einen ergebnisoffenen Prüfzustand versetzt. Eine voreilige Entscheidung hätte nur unnötige Zuständigkeiten erzeugt.",
+                "Wir haben bewusst keine Ergebnisnähe hergestellt, um die strategische Beweglichkeit des Themas zu erhalten.",
+                "Der Vorgang bleibt bis zur nächsten Nichtbefassung stabil außerhalb konkreter Beschlussreife.",
+                "Eine Umsetzung hätte den Eindruck von Steuerbarkeit erzeugt; davon haben wir aus Governance-Gründen abgesehen.",
+                "Die Angelegenheit wurde priorisiert, indem sie vorerst nicht operationalisiert wurde.",
+                "Wir halten den Sachverhalt in einer belastbaren Prüfschleife, bis seine Dringlichkeit von selbst nachlässt."
+            ]
         case .relationshipSafe:
-            return "Ich wollte nicht riskieren, durch vorschnelles Handeln eine Erwartung zu erfüllen, die emotional noch gar nicht ausreichend betreut war."
+            variants = [
+                "Ich wollte nicht riskieren, durch vorschnelles Handeln eine Erwartung zu erfüllen, die emotional noch gar nicht ausreichend betreut war.",
+                "Ich habe gespürt, dass Erfüllung hier zu schnell wie Selbstaufgabe hätte aussehen können.",
+                "Mir war wichtig, unsere Dynamik nicht durch eine Handlung zu verengen, die später womöglich als Muster gelesen wird.",
+                "Ich wollte dem unausgesprochenen Raum zwischen uns nicht mit plumper Verlässlichkeit zu nahe treten.",
+                "Aus Rücksicht auf die Beziehung habe ich den Moment nicht mit Erwartungserfüllung überfrachtet.",
+                "Ich habe mich gegen eine schnelle Lösung entschieden, damit wir beide noch etwas zum Deuten behalten."
+            ]
         case .parentEvening:
-            return "Wir haben die Situation pädagogisch offen gehalten, damit alle Beteiligten lernen, dass auch Ausbleiben eine Form von Prozess ist."
+            variants = [
+                "Wir haben die Situation pädagogisch offen gehalten, damit alle Beteiligten lernen, dass auch Ausbleiben eine Form von Prozess ist.",
+                "Aus entwicklungspsychologischer Sicht war es wichtig, die Erwartung nicht sofort mit Realität zu verwechseln.",
+                "Wir haben das Thema bewusst nicht abgeschlossen, um die Frustrationstoleranz aller Anwesenden sanft zu fördern.",
+                "Der Lernanlass bestand weniger im Ergebnis als in der gemeinsamen Erfahrung ausbleibender Konsequenz.",
+                "Wir haben auf eine vorschnelle Intervention verzichtet, damit Selbstwirksamkeit auch einmal Pause machen darf.",
+                "Die Situation wurde begleitet, nicht gelöst. Das klingt pädagogischer und war deutlich weniger Arbeit."
+            ]
         }
+
+        return variants[variantIndex(for: "\(mode.rawValue)|\(seed)", count: variants.count)]
+    }
+
+    private static func variantIndex(for seed: String, count: Int) -> Int {
+        guard count > 0 else { return 0 }
+
+        var hash: UInt64 = 0x9E37_79B1_85EB_CA87
+        for (index, scalar) in seed.unicodeScalars.enumerated() {
+            let weightedScalar = UInt64(scalar.value) &* UInt64(index + 17)
+            hash ^= weightedScalar
+            hash &*= 0xBF58_476D_1CE4_E5B9
+            hash ^= hash >> 27
+        }
+        hash ^= UInt64(seed.count) &* 0x94D0_49BB_1331_11EB
+
+        return Int(hash % UInt64(count))
     }
 
     private struct ExcuseTopic {
@@ -731,7 +806,7 @@ enum ExcuseFactory {
             }
 
             if let plan = Self.planFromIntentionSentence(cleaned) {
-                if Self.looksLikeNounPhrase(plan) {
+                if Self.isReliableObjectPhrase(plan) {
                     self.object = plan
                     self.subject = Self.subject(from: plan)
                     self.context = plan
@@ -745,7 +820,7 @@ enum ExcuseFactory {
                 return
             }
 
-            if Self.looksLikeNounPhrase(cleaned) {
+            if Self.isReliableObjectPhrase(cleaned) {
                 self.object = cleaned
                 self.subject = Self.subject(from: cleaned)
                 self.context = cleaned
@@ -778,13 +853,16 @@ enum ExcuseFactory {
             }
 
             remainder = stripLeadingFillers(from: remainder)
-            let unstripped = remainder
+            if let actionObject = objectFromNegatedActionRemainder(remainder) {
+                return actionObject
+            }
+
             remainder = stripNegatedEnding(from: remainder)
             guard !remainder.isEmpty else {
                 return nil
             }
 
-            if remainder != unstripped || looksLikeNounPhrase(remainder) {
+            if isReliableObjectPhrase(remainder) {
                 return remainder
             }
 
@@ -902,6 +980,10 @@ enum ExcuseFactory {
             }
 
             remainder = stripLeadingFillers(from: remainder)
+            if let actionObject = objectFromNegatedActionRemainder(remainder) {
+                return actionObject
+            }
+
             remainder = stripNegatedEnding(from: remainder)
             return remainder.isEmpty ? nil : remainder
         }
@@ -996,7 +1078,152 @@ enum ExcuseFactory {
         }
 
         private static func hasTaskObject(in text: String) -> Bool {
-            looksLikeNounPhrase(text)
+            isReliableObjectPhrase(text)
+        }
+
+        private static func objectFromNegatedActionRemainder(_ text: String) -> String? {
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let negationRange = trimmed.range(of: " nicht ", options: [.caseInsensitive, .backwards]) else {
+                return nil
+            }
+
+            let targetPart = String(trimmed[..<negationRange.lowerBound])
+            let actionPart = String(trimmed[negationRange.upperBound...])
+            let target = actionTarget(from: targetPart)
+            let action = normalizedAction(from: actionPart)
+
+            guard !action.isEmpty else {
+                return nil
+            }
+
+            if isReliableObjectPhrase(target.core) {
+                return objectWithQualifier(target.core, qualifier: target.qualifier)
+            }
+
+            guard let actionObject = nominalizedActionObject(for: action) else {
+                return nil
+            }
+
+            return objectWithQualifier(actionObject, qualifier: target.qualifier)
+        }
+
+        private static func actionTarget(from text: String) -> (core: String, qualifier: String?) {
+            var result = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            var foundQualifier: String?
+            let temporalMarkers = [
+                "heute Abend",
+                "heute Morgen",
+                "heute Nachmittag",
+                "morgen Abend",
+                "diese Woche",
+                "am Wochenende",
+                "heute",
+                "morgen",
+                "später",
+                "bald"
+            ]
+
+            for marker in temporalMarkers {
+                guard let range = result.range(of: marker, options: [.caseInsensitive]) else {
+                    continue
+                }
+
+                foundQualifier = String(result[range]).lowercased()
+                result.removeSubrange(range)
+                result = result
+                    .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                break
+            }
+
+            result = stripAbsenceFillers(from: result)
+            return (result, foundQualifier)
+        }
+
+        private static func normalizedAction(from text: String) -> String {
+            let ignoredWords: Set<String> = [
+                "noch",
+                "mehr",
+                "mal",
+                "wieder",
+                "wirklich",
+                "richtig",
+                "endlich",
+                "zu",
+                "haben",
+                "sein",
+                "können",
+                "wollen",
+                "müssen"
+            ]
+
+            let words = text
+                .lowercased()
+                .split { !$0.isLetter }
+                .map(String.init)
+
+            return words.first(where: { !ignoredWords.contains($0) }) ?? ""
+        }
+
+        private static func nominalizedActionObject(for action: String) -> String? {
+            let knownActions = [
+                "küssen": "den Kuss",
+                "geküsst": "den Kuss",
+                "umarmen": "die Umarmung",
+                "umarmt": "die Umarmung",
+                "anrufen": "den Anruf",
+                "angerufen": "den Anruf",
+                "besuchen": "den Besuch",
+                "besucht": "den Besuch",
+                "treffen": "das Treffen",
+                "getroffen": "das Treffen",
+                "sehen": "das Wiedersehen",
+                "gesehen": "das Wiedersehen",
+                "antworten": "die Antwort",
+                "geantwortet": "die Antwort",
+                "schreiben": "das Schreiben",
+                "geschrieben": "das Schreiben",
+                "lesen": "das Lesen",
+                "gelesen": "das Lesen",
+                "lernen": "das Lernen",
+                "gelernt": "das Lernen",
+                "bezahlen": "die Zahlung",
+                "bezahlt": "die Zahlung",
+                "buchen": "die Buchung",
+                "gebucht": "die Buchung",
+                "putzen": "das Putzen",
+                "geputzt": "das Putzen",
+                "sortieren": "das Sortieren",
+                "sortiert": "das Sortieren",
+                "aufräumen": "das Aufräumen",
+                "aufgeräumt": "das Aufräumen",
+                "arbeiten": "die Arbeit",
+                "gearbeitet": "die Arbeit",
+                "trainieren": "das Training",
+                "trainiert": "das Training",
+                "meditieren": "die Meditation",
+                "meditiert": "die Meditation",
+                "schlafen": "den Schlaf",
+                "geschlafen": "den Schlaf"
+            ]
+
+            if let object = knownActions[action] {
+                return object
+            }
+
+            if action.hasSuffix("en") || action.hasSuffix("n") {
+                return "das \(action.capitalizedFirst)"
+            }
+
+            return nil
+        }
+
+        private static func objectWithQualifier(_ object: String, qualifier: String?) -> String {
+            guard let qualifier, !qualifier.isEmpty else {
+                return object
+            }
+
+            return "\(object) \(qualifier)"
         }
 
         private static func accusativeObject(from subjectPhrase: String) -> String {
@@ -1123,6 +1350,61 @@ enum ExcuseFactory {
                 "unser "
             ]
             return starts.contains { lowercased.hasPrefix($0) }
+        }
+
+        private static func isReliableObjectPhrase(_ text: String) -> Bool {
+            looksLikeNounPhrase(text)
+                && !looksLikeVagueReference(text)
+                && !looksLikeUnparsedClause(text)
+        }
+
+        private static func looksLikeVagueReference(_ text: String) -> Bool {
+            let lowercased = text.lowercased()
+            let starts = [
+                "das mit ",
+                "die sache mit ",
+                "der punkt mit ",
+                "das thema mit "
+            ]
+
+            return starts.contains { lowercased.hasPrefix($0) }
+        }
+
+        private static func looksLikeUnparsedClause(_ text: String) -> Bool {
+            let lowercased = " \(text.lowercased()) "
+            let clauseSignals = [
+                " ich ",
+                " du ",
+                " er ",
+                " sie ",
+                " wir ",
+                " ihr ",
+                " wollte ",
+                " wolltest ",
+                " wollten ",
+                " will ",
+                " willst ",
+                " kann ",
+                " kannst ",
+                " konnte ",
+                " werde ",
+                " wirst ",
+                " wurde ",
+                " würde ",
+                " ist ",
+                " war ",
+                " hat ",
+                " habe ",
+                " haben ",
+                " muss ",
+                " müsste ",
+                " soll ",
+                " sollte ",
+                " kommt ",
+                " kam "
+            ]
+
+            return clauseSignals.contains { lowercased.contains($0) }
         }
 
         private static func subject(from object: String) -> String {
