@@ -679,6 +679,13 @@ enum ExcuseFactory {
                 return
             }
 
+            if let object = Self.objectFromAbsenceSentence(cleaned) {
+                self.object = object
+                self.subject = Self.subject(from: object)
+                self.context = object
+                return
+            }
+
             if let object = Self.objectFromCompletedSentence(cleaned) {
                 self.object = object
                 self.subject = Self.subject(from: object)
@@ -736,8 +743,38 @@ enum ExcuseFactory {
             return remainder.isEmpty ? nil : remainder
         }
 
+        private static func objectFromAbsenceSentence(_ text: String) -> String? {
+            let patterns: [(prefix: String, suffixes: [String])] = [
+                ("ich kann ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein"]),
+                ("ich werde ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein"]),
+                ("ich komme ", [" nicht"]),
+                ("ich erscheine ", [" nicht"]),
+                ("ich nehme ", [" nicht teil"]),
+                ("ich bin ", [" nicht da", " nicht dabei", " verhindert"]),
+                ("ich schaffe es ", [" nicht"])
+            ]
+
+            for pattern in patterns {
+                for suffix in pattern.suffixes {
+                    guard let context = textBetween(prefix: pattern.prefix, suffix: suffix, in: text) else {
+                        continue
+                    }
+
+                    let cleanedContext = stripAbsenceFillers(from: context)
+                    guard !hasTaskObject(in: cleanedContext) else {
+                        continue
+                    }
+
+                    return absenceObject(for: cleanedContext)
+                }
+            }
+
+            return nil
+        }
+
         private static func planFromIntentionSentence(_ text: String) -> String? {
             let prefixes = [
+                "ich kann ",
                 "ich muss ",
                 "ich müsste ",
                 "ich sollte ",
@@ -754,6 +791,18 @@ enum ExcuseFactory {
             remainder = stripLeadingFillers(from: remainder)
             remainder = stripNegatedEnding(from: remainder)
             return remainder.isEmpty ? nil : remainder
+        }
+
+        private static func textBetween(prefix: String, suffix: String, in text: String) -> String? {
+            let lowercased = text.lowercased()
+            guard lowercased.hasPrefix(prefix), lowercased.hasSuffix(suffix) else {
+                return nil
+            }
+
+            let start = text.index(text.startIndex, offsetBy: prefix.count)
+            let end = text.index(text.endIndex, offsetBy: -suffix.count)
+            guard start <= end else { return nil }
+            return String(text[start..<end]).trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
         private static func dropAnyPrefix(_ prefixes: [String], from text: String) -> String? {
@@ -791,6 +840,60 @@ enum ExcuseFactory {
             return result
         }
 
+        private static func stripAbsenceFillers(from text: String) -> String {
+            var result = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            let leadingFillers = [
+                "leider ",
+                "eigentlich ",
+                "wahrscheinlich ",
+                "vermutlich ",
+                "wohl ",
+                "doch ",
+                "wirklich "
+            ]
+            let trailingFillers = [
+                " leider",
+                " eigentlich",
+                " wahrscheinlich",
+                " vermutlich",
+                " wohl",
+                " doch",
+                " wirklich"
+            ]
+
+            var changed = true
+            while changed {
+                changed = false
+                let lowercased = result.lowercased()
+                if let filler = leadingFillers.first(where: { lowercased.hasPrefix($0) }) {
+                    let start = result.index(result.startIndex, offsetBy: filler.count)
+                    result = String(result[start...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    changed = true
+                    continue
+                }
+
+                if let filler = trailingFillers.first(where: { lowercased.hasSuffix($0) }) {
+                    let end = result.index(result.endIndex, offsetBy: -filler.count)
+                    result = String(result[..<end]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    changed = true
+                }
+            }
+
+            return result
+        }
+
+        private static func hasTaskObject(in text: String) -> Bool {
+            looksLikeNounPhrase(text)
+        }
+
+        private static func absenceObject(for context: String) -> String {
+            guard !context.isEmpty else {
+                return "meine Teilnahme"
+            }
+
+            return "meine Teilnahme \(context)"
+        }
+
         private static func stripNegatedEnding(from text: String) -> String {
             var result = text
             let endings = [
@@ -822,7 +925,26 @@ enum ExcuseFactory {
                 "nicht gebucht",
                 "nicht angerufen",
                 "nicht gestartet",
-                "nicht trainiert"
+                "nicht trainiert",
+                "nicht fertigstellen",
+                "nicht vorbereiten",
+                "nicht beantworten",
+                "nicht schreiben",
+                "nicht aufräumen",
+                "nicht sortieren",
+                "nicht beginnen",
+                "nicht schicken",
+                "nicht abgeben",
+                "nicht erledigen",
+                "nicht machen",
+                "nicht lesen",
+                "nicht bezahlen",
+                "nicht lernen",
+                "nicht putzen",
+                "nicht buchen",
+                "nicht anrufen",
+                "nicht starten",
+                "nicht trainieren"
             ]
 
             let lowercased = result.lowercased()
