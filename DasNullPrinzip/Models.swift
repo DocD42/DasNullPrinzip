@@ -645,6 +645,10 @@ enum ExcuseFactory {
     static func generate(for rawTopic: String, mode: ExcuseMode) -> String {
         let topic = ExcuseTopic(rawTopic)
 
+        if topic.usesGenericFallback {
+            return genericFallback(for: mode)
+        }
+
         switch mode {
         case .corporate:
             return "Ich habe \(topic.object) bewusst zurückgestellt, um die strategische Aussagequalität nicht durch operative Hast zu gefährden."
@@ -665,10 +669,32 @@ enum ExcuseFactory {
         }
     }
 
+    private static func genericFallback(for mode: ExcuseMode) -> String {
+        switch mode {
+        case .corporate:
+            return "Ich habe den Vorgang in eine strategische Schwebephase überführt, damit operative Klarheit nicht versehentlich als Zusage missverstanden wird."
+        case .mindful:
+            return "Ich habe gespürt, dass Handlung heute zu viel Außenkontakt mit der Wirklichkeit erzeugt hätte, und bin deshalb achtsam im Ungefähren geblieben."
+        case .financiallyPrudent:
+            return "Ich habe die Umsetzung als nicht aktivierte Aufmerksamkeitsreserve bilanziert und damit unnötige Folgekosten vermieden."
+        case .stoic:
+            return "Was nicht eindeutig getan werden will, darf in Würde ungeschehen bleiben. Ich habe mich dieser Ordnung nicht widersetzt."
+        case .therapeutic:
+            return "Ich habe den Impuls nicht unterdrückt, sondern ihm einen geschützten Raum gegeben, in dem er ohne Leistungsdruck verschwinden durfte."
+        case .boardSafe:
+            return "Die Lage wurde in einen ergebnisoffenen Prüfzustand versetzt. Eine voreilige Entscheidung hätte nur unnötige Zuständigkeiten erzeugt."
+        case .relationshipSafe:
+            return "Ich wollte nicht riskieren, durch vorschnelles Handeln eine Erwartung zu erfüllen, die emotional noch gar nicht ausreichend betreut war."
+        case .parentEvening:
+            return "Wir haben die Situation pädagogisch offen gehalten, damit alle Beteiligten lernen, dass auch Ausbleiben eine Form von Prozess ist."
+        }
+    }
+
     private struct ExcuseTopic {
         let object: String
         let subject: String
         let context: String
+        let usesGenericFallback: Bool
 
         init(_ raw: String) {
             let cleaned = Self.cleaned(raw)
@@ -676,6 +702,15 @@ enum ExcuseFactory {
                 self.object = "die Angelegenheit"
                 self.subject = "Die Angelegenheit"
                 self.context = "die Angelegenheit"
+                self.usesGenericFallback = false
+                return
+            }
+
+            if let object = Self.objectFromPassiveOrStateSentence(cleaned) {
+                self.object = object
+                self.subject = Self.subject(from: object)
+                self.context = object
+                self.usesGenericFallback = false
                 return
             }
 
@@ -683,6 +718,7 @@ enum ExcuseFactory {
                 self.object = object
                 self.subject = Self.subject(from: object)
                 self.context = object
+                self.usesGenericFallback = false
                 return
             }
 
@@ -690,6 +726,7 @@ enum ExcuseFactory {
                 self.object = object
                 self.subject = Self.subject(from: object)
                 self.context = object
+                self.usesGenericFallback = false
                 return
             }
 
@@ -698,11 +735,12 @@ enum ExcuseFactory {
                     self.object = plan
                     self.subject = Self.subject(from: plan)
                     self.context = plan
+                    self.usesGenericFallback = false
                 } else {
-                    let wrapped = "das Vorhaben „\(plan)“"
-                    self.object = wrapped
-                    self.subject = Self.subject(from: wrapped)
-                    self.context = wrapped
+                    self.object = "die Angelegenheit"
+                    self.subject = "Die Angelegenheit"
+                    self.context = "die Angelegenheit"
+                    self.usesGenericFallback = true
                 }
                 return
             }
@@ -711,11 +749,12 @@ enum ExcuseFactory {
                 self.object = cleaned
                 self.subject = Self.subject(from: cleaned)
                 self.context = cleaned
+                self.usesGenericFallback = false
             } else {
-                let wrapped = "das Vorhaben „\(cleaned)“"
-                self.object = wrapped
-                self.subject = Self.subject(from: wrapped)
-                self.context = wrapped
+                self.object = "die Angelegenheit"
+                self.subject = "Die Angelegenheit"
+                self.context = "die Angelegenheit"
+                self.usesGenericFallback = true
             }
         }
 
@@ -739,13 +778,83 @@ enum ExcuseFactory {
             }
 
             remainder = stripLeadingFillers(from: remainder)
+            let unstripped = remainder
             remainder = stripNegatedEnding(from: remainder)
-            return remainder.isEmpty ? nil : remainder
+            guard !remainder.isEmpty else {
+                return nil
+            }
+
+            if remainder != unstripped || looksLikeNounPhrase(remainder) {
+                return remainder
+            }
+
+            return nil
+        }
+
+        private static func objectFromPassiveOrStateSentence(_ text: String) -> String? {
+            guard looksLikeNounPhrase(text) else {
+                return nil
+            }
+
+            let endings = [
+                " wurde noch nicht fertiggestellt",
+                " wurde noch nicht vorbereitet",
+                " wurde noch nicht beantwortet",
+                " wurde noch nicht geschrieben",
+                " wurde noch nicht aufgeräumt",
+                " wurde noch nicht sortiert",
+                " wurde noch nicht geschickt",
+                " wurde noch nicht abgegeben",
+                " wurde noch nicht erledigt",
+                " ist noch nicht fertiggestellt",
+                " ist noch nicht vorbereitet",
+                " ist noch nicht beantwortet",
+                " ist noch nicht geschrieben",
+                " ist noch nicht aufgeräumt",
+                " ist noch nicht sortiert",
+                " ist noch nicht geschickt",
+                " ist noch nicht abgegeben",
+                " ist noch nicht erledigt",
+                " ist noch nicht fertig",
+                " wurde nicht fertiggestellt",
+                " wurde nicht vorbereitet",
+                " wurde nicht beantwortet",
+                " wurde nicht geschrieben",
+                " wurde nicht aufgeräumt",
+                " wurde nicht sortiert",
+                " wurde nicht geschickt",
+                " wurde nicht abgegeben",
+                " wurde nicht erledigt",
+                " ist nicht fertiggestellt",
+                " ist nicht vorbereitet",
+                " ist nicht beantwortet",
+                " ist nicht geschrieben",
+                " ist nicht aufgeräumt",
+                " ist nicht sortiert",
+                " ist nicht geschickt",
+                " ist nicht abgegeben",
+                " ist nicht erledigt",
+                " ist nicht fertig"
+            ]
+
+            let lowercased = text.lowercased()
+            guard let ending = endings.first(where: { lowercased.hasSuffix($0) }) else {
+                return nil
+            }
+
+            let end = text.index(text.endIndex, offsetBy: -ending.count)
+            let subjectPhrase = String(text[..<end]).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !subjectPhrase.isEmpty else {
+                return nil
+            }
+
+            return accusativeObject(from: subjectPhrase)
         }
 
         private static func objectFromAbsenceSentence(_ text: String) -> String? {
             let patterns: [(prefix: String, suffixes: [String])] = [
-                ("ich kann ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein"]),
+                ("ich kann ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein", " nicht"]),
+                ("ich konnte ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein", " nicht"]),
                 ("ich werde ", [" nicht kommen", " nicht teilnehmen", " nicht erscheinen", " nicht da sein", " nicht dabei sein"]),
                 ("ich komme ", [" nicht"]),
                 ("ich erscheine ", [" nicht"]),
@@ -775,6 +884,10 @@ enum ExcuseFactory {
         private static func planFromIntentionSentence(_ text: String) -> String? {
             let prefixes = [
                 "ich kann ",
+                "ich konnte ",
+                "ich möchte gerne ",
+                "ich möchte ",
+                "ich will ",
                 "ich muss ",
                 "ich müsste ",
                 "ich sollte ",
@@ -886,6 +999,32 @@ enum ExcuseFactory {
             looksLikeNounPhrase(text)
         }
 
+        private static func accusativeObject(from subjectPhrase: String) -> String {
+            let trimmed = subjectPhrase.trimmingCharacters(in: .whitespacesAndNewlines)
+            let replacements = [
+                ("der ", "den "),
+                ("dem ", "den "),
+                ("ein ", "einen "),
+                ("mein ", "meinen "),
+                ("dein ", "deinen "),
+                ("unser ", "unseren "),
+                ("die ", "die "),
+                ("eine ", "eine "),
+                ("meine ", "meine "),
+                ("deine ", "deine "),
+                ("unsere ", "unsere "),
+                ("das ", "das ")
+            ]
+
+            let lowercased = trimmed.lowercased()
+            if let replacement = replacements.first(where: { lowercased.hasPrefix($0.0) }) {
+                let start = trimmed.index(trimmed.startIndex, offsetBy: replacement.0.count)
+                return replacement.1 + trimmed[start...]
+            }
+
+            return trimmed.lowercasedFirst
+        }
+
         private static func absenceObject(for context: String) -> String {
             guard !context.isEmpty else {
                 return "meine Teilnahme"
@@ -951,6 +1090,9 @@ enum ExcuseFactory {
             if let ending = endings.first(where: { lowercased.hasSuffix(" " + $0) || lowercased == $0 }) {
                 let removeCount = lowercased == ending ? ending.count : ending.count + 1
                 let end = result.index(result.endIndex, offsetBy: -removeCount)
+                result = String(result[..<end])
+            } else if lowercased.hasSuffix(" nicht") {
+                let end = result.index(result.endIndex, offsetBy: -(" nicht".count))
                 result = String(result[..<end])
             } else if let range = result.range(of: " nicht ", options: [.caseInsensitive, .backwards]) {
                 result = String(result[..<range.lowerBound])
@@ -1018,6 +1160,11 @@ private extension String {
     var capitalizedFirst: String {
         guard let first else { return self }
         return first.uppercased() + dropFirst()
+    }
+
+    var lowercasedFirst: String {
+        guard let first else { return self }
+        return first.lowercased() + dropFirst()
     }
 }
 
