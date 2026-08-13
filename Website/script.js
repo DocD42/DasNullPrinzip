@@ -9,7 +9,7 @@ const nullQuotes = [
 
 const doNothingButton = document.querySelector("#doNothingButton");
 const doNothingCount = document.querySelector("#doNothingCount");
-let nullActs = Number.parseInt(localStorage.getItem("nullActs") || "0", 10);
+let nullActs = 0;
 
 function renderNullActs() {
   let label = "Keine Nullakte";
@@ -23,7 +23,6 @@ function renderNullActs() {
 
 doNothingButton?.addEventListener("click", () => {
   nullActs += 1;
-  localStorage.setItem("nullActs", String(nullActs));
   doNothingButton.textContent = nullQuotes[nullActs % nullQuotes.length];
   renderNullActs();
 });

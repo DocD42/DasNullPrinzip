@@ -5,12 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Das Null-Prinzip</title>
   <meta name="description" content="Das Null-Prinzip: Minimaler Aufwand. Maximale Ausrede. Satirisches Sachbuch und begleitende Anti-Produktivitäts-App.">
+  <meta name="robots" content="index,follow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self'; upgrade-insecure-requests">
   <meta name="theme-color" content="#f3ead8">
+  <link rel="canonical" href="https://das-null-prinzip.de/">
   <meta property="og:title" content="Das Null-Prinzip">
   <meta property="og:description" content="Die erste App, die dich nicht verbessern will.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/book-cover.png">
-  <link rel="icon" href="assets/book-cover.png">
+  <meta property="og:url" content="https://das-null-prinzip.de/">
+  <meta property="og:site_name" content="Das Null-Prinzip">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:image" content="https://das-null-prinzip.de/assets/book-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Das Null-Prinzip">
+  <meta name="twitter:description" content="Minimaler Aufwand. Maximale Ausrede.">
+  <meta name="twitter:image" content="https://das-null-prinzip.de/assets/book-cover.png">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -29,7 +41,7 @@
 
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
-      <img class="hero-cover" src="assets/book-cover.png" alt="Buchcover Das Null-Prinzip">
+      <img class="hero-cover" src="assets/book-cover.png" alt="Buchcover Das Null-Prinzip" fetchpriority="high">
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-copy">
         <p class="eyebrow">Satirisches Sachbuch + App</p>
@@ -121,15 +133,15 @@
       <div class="status-board">
         <div>
           <strong>Buch</strong>
-          <span>Veröffentlichung in Vorbereitung</span>
+          <span>KDP-Veröffentlichung angestoßen</span>
         </div>
         <div>
           <strong>iPhone-App</strong>
-          <span>Prototyp läuft lokal</span>
+          <span>App-Store-Abgabe wird vorbereitet</span>
         </div>
         <div>
           <strong>Website</strong>
-          <span>Minimal wirksam</span>
+          <span>Datensparsam online</span>
         </div>
       </div>
     </section>
@@ -143,6 +155,6 @@
     </nav>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>

@@ -1,40 +1,50 @@
-# Website live schalten
+# Website bei IONOS aktualisieren
 
-Die Domain allein ist nur die Adresse. Damit dort die Website erscheint, brauchst du:
-
-1. einen Hosting-Ort für die Dateien aus diesem Ordner
-2. DNS-Einträge beim Domainanbieter
-3. optional HTTPS, sobald DNS korrekt zeigt
-
-## Einfacher Weg: GitHub Pages
-
-1. GitHub-Repo öffnen.
-2. Unter `Settings` -> `Pages` als Quelle `GitHub Actions` auswählen.
-3. Als Custom Domain `das-null-prinzip.de` eintragen.
-4. Beim Domainanbieter die DNS-Zone bearbeiten.
-5. Nach dem nächsten Push oder einem manuellen Start von `Deploy website` unter `Actions` veröffentlicht GitHub den Ordner `Website`.
-
-Laut offizieller GitHub-Dokumentation soll ein Apex-Domainname wie `das-null-prinzip.de` per `A` Records auf diese GitHub-Pages-IP-Adressen zeigen:
+Die Live-Website liegt im IONOS-Webspace im Verzeichnis:
 
 ```text
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
+/das-null-prinzip
 ```
 
-Für `www.das-null-prinzip.de` wird ein `CNAME` auf die GitHub-Pages-Adresse des Accounts gesetzt, zum Beispiel:
+## Upload
+
+Am einfachsten im Finder doppelklicken:
 
 ```text
-DocD42.github.io
+Website/ionos-deploy.local.command
 ```
 
-GitHub empfiehlt außerdem, die Custom Domain vor oder beim Einrichten zu verifizieren, um Domain-Takeover-Risiken zu vermeiden.
+Danach:
 
-Quelle: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+1. Benutzer und Remote-Verzeichnis mit Enter bestätigen.
+2. `ja` eintippen.
+3. Beim Passwort-Prompt das SFTP-Passwort blind einfügen und Enter drücken.
+4. Erst wenn `sftp>` erscheint, die angezeigten Upload-Befehle einfügen.
 
-## Was ich ohne deinen Login nicht tun kann
+## Dateien, die live hochgeladen werden
 
-Ich kann die Website-Dateien vorbereiten und ins Repo pushen. Ich kann aber nicht selbst in deinen Domainanbieter-Account gehen, solange du mir nicht im Chat sagst, bei welchem Anbieter du die Domain registriert hast und welche DNS-Maske du dort siehst.
+- `index.html`
+- `styles.css`
+- `script.js`
+- `impressum.html`
+- `datenschutz.html`
+- `robots.txt`
+- `sitemap.xml`
+- `favicon.ico`
+- `assets/book-cover.png`
+- `assets/apple-touch-icon.png`
 
-Du musst keine Passwörter teilen. Es reicht meistens, wenn du Screenshots oder die Namen der DNS-Felder hier beschreibst.
+Nicht hochladen:
+
+- `README.md`
+- `DEPLOYMENT.md`
+- `LEGAL-CHECKLIST.md`
+- `CNAME`
+
+## Nach dem Upload prüfen
+
+- `https://das-null-prinzip.de/`
+- `https://das-null-prinzip.de/impressum.html`
+- `https://das-null-prinzip.de/datenschutz.html`
+
+Im Browser bei Bedarf mit Cmd-Shift-R hart neu laden.

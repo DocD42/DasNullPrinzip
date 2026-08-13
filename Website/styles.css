@@ -515,6 +515,53 @@ textarea {
   font-weight: 650;
 }
 
+.legal-note {
+  padding: 16px 18px;
+  color: var(--ink);
+  background: rgba(255, 248, 234, 0.64);
+  border: 1px solid var(--rule);
+  border-left: 5px solid var(--red);
+  border-radius: 8px;
+}
+
+.legal-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.legal-section h2 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+
+.legal-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.legal-list div {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.34fr) minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.legal-list dt {
+  color: var(--red);
+  font-weight: 950;
+}
+
+.legal-list dd {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 750;
+}
+
 @media (max-width: 1360px) {
   .app-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -625,5 +672,10 @@ textarea {
 
   .site-footer {
     flex-direction: column;
+  }
+
+  .legal-list div {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
