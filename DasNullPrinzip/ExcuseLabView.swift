@@ -77,6 +77,7 @@ struct ExcuseLabView: View {
                         }
                     }
                     .padding(16)
+                    .nullTabBarClearance()
                 }
             }
             .navigationTitle("Ausreden")

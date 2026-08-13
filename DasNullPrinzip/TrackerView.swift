@@ -17,6 +17,7 @@ struct TrackerView: View {
                         }
                     }
                     .padding(16)
+                    .nullTabBarClearance()
                 }
             }
             .navigationTitle("Tracker")

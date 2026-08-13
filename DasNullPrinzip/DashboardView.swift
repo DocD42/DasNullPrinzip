@@ -57,6 +57,7 @@ struct DashboardView: View {
                         }
                     }
                     .padding(16)
+                    .nullTabBarClearance()
                 }
             }
             .navigationTitle("Das Null-Prinzip")

@@ -34,6 +34,7 @@ struct ChallengeView: View {
                             }
                         }
                         .padding(16)
+                        .nullTabBarClearance()
                     }
                 }
             }

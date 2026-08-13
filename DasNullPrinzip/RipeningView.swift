@@ -16,6 +16,7 @@ struct RipeningView: View {
                         }
                     }
                     .padding(16)
+                    .nullTabBarClearance()
                 }
             }
             .navigationTitle("Reifen")

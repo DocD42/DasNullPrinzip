@@ -10,6 +10,7 @@ enum NullTheme {
     static let sofaGray = Color(red: 0.47, green: 0.46, blue: 0.42)
     static let gold = Color(red: 0.72, green: 0.50, blue: 0.18)
     static let rule = Color.black.opacity(0.16)
+    static let tabBarClearance: CGFloat = 104
 }
 
 struct NullScreen<Content: View>: View {
@@ -26,6 +27,12 @@ struct NullScreen<Content: View>: View {
             content
         }
         .foregroundStyle(NullTheme.ink)
+    }
+}
+
+extension View {
+    func nullTabBarClearance() -> some View {
+        padding(.bottom, NullTheme.tabBarClearance)
     }
 }
 
