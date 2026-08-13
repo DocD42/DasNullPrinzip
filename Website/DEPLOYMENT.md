@@ -28,6 +28,7 @@ Danach:
 - `script.js`
 - `impressum.html`
 - `datenschutz.html`
+- `.htaccess`
 - `robots.txt`
 - `sitemap.xml`
 - `favicon.ico`
@@ -46,5 +47,7 @@ Nicht hochladen:
 - `https://das-null-prinzip.de/`
 - `https://das-null-prinzip.de/impressum.html`
 - `https://das-null-prinzip.de/datenschutz.html`
+- `http://das-null-prinzip.de/` sollte automatisch auf `https://das-null-prinzip.de/` weiterleiten.
+- `https://www.das-null-prinzip.de/` sollte automatisch auf `https://das-null-prinzip.de/` weiterleiten.
 
 Im Browser bei Bedarf mit Cmd-Shift-R hart neu laden.
