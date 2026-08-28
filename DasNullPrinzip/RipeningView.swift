@@ -225,6 +225,12 @@ struct AddTaskSheet: View {
     @EnvironmentObject private var store: NullStore
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
+    private let suggestions = [
+        "Steuerunterlagen abgeben",
+        "Team-Feedback beantworten",
+        "Keller für Besuch aufräumen",
+        "Rückruf erledigen"
+    ]
 
     var body: some View {
         NavigationStack {
@@ -234,10 +240,21 @@ struct AddTaskSheet: View {
                 }
 
                 Section {
-                    Text("Steuerunterlagen abgeben")
-                    Text("Team-Feedback beantworten")
-                    Text("Keller für Besuch aufräumen")
-                    Text("Rückruf erledigen")
+                    ForEach(suggestions, id: \.self) { suggestion in
+                        Button {
+                            title = suggestion
+                        } label: {
+                            HStack {
+                                Text(suggestion)
+                                    .foregroundStyle(NullTheme.ink)
+                                Spacer()
+                                if title == suggestion {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(NullTheme.oxblood)
+                                }
+                            }
+                        }
+                    }
                 } header: {
                     Text("Geeignete Fremdaufgaben")
                 }

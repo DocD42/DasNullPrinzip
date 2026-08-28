@@ -224,6 +224,12 @@ struct AddHabitSheet: View {
     @EnvironmentObject private var store: NullStore
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
+    private let suggestions = [
+        "5-Uhr-Morgenroutine",
+        "Podcast beginnen",
+        "Romanprojekt starten",
+        "KI-Kurs durcharbeiten"
+    ]
 
     var body: some View {
         NavigationStack {
@@ -233,10 +239,21 @@ struct AddHabitSheet: View {
                 }
 
                 Section {
-                    Text("5-Uhr-Morgenroutine")
-                    Text("Podcast beginnen")
-                    Text("Romanprojekt starten")
-                    Text("KI-Kurs durcharbeiten")
+                    ForEach(suggestions, id: \.self) { suggestion in
+                        Button {
+                            title = suggestion
+                        } label: {
+                            HStack {
+                                Text(suggestion)
+                                    .foregroundStyle(NullTheme.ink)
+                                Spacer()
+                                if title == suggestion {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(NullTheme.oxblood)
+                                }
+                            }
+                        }
+                    }
                 } header: {
                     Text("Geeignete innere Vorhaben")
                 }
