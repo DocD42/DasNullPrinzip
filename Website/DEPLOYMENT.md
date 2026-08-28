@@ -28,6 +28,7 @@ Danach:
 - `script.js`
 - `impressum.html`
 - `datenschutz.html`
+- `support.html`
 - `.htaccess`
 - `robots.txt`
 - `sitemap.xml`
@@ -47,6 +48,7 @@ Nicht hochladen:
 - `https://das-null-prinzip.de/`
 - `https://das-null-prinzip.de/impressum.html`
 - `https://das-null-prinzip.de/datenschutz.html`
+- `https://das-null-prinzip.de/support.html`
 - `http://das-null-prinzip.de/` sollte automatisch auf `https://das-null-prinzip.de/` weiterleiten.
 - `https://www.das-null-prinzip.de/` sollte automatisch auf `https://das-null-prinzip.de/` weiterleiten.
 

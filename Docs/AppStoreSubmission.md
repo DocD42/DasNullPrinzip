@@ -16,7 +16,7 @@ Diese Datei ist die Arbeitsmappe fuer App Store Connect. Sie enthaelt Felder zum
 | Kategorie sekundaer | Unterhaltung |
 | Preisempfehlung fuer Version 1.0 | Kostenlos |
 | Copyright | 2026 Dr. René Deist |
-| Support URL | https://das-null-prinzip.de/ |
+| Support URL | https://das-null-prinzip.de/support.html |
 | Marketing URL | https://das-null-prinzip.de/ |
 | Datenschutz URL | https://das-null-prinzip.de/datenschutz.html |
 
