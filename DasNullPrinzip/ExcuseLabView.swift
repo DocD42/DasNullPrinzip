@@ -5,6 +5,7 @@ struct ExcuseLabView: View {
     @State private var mode: ExcuseMode = .corporate
     @State private var result = ExcuseFactory.generate(for: "Ich habe den Bericht nicht geschrieben.", mode: .corporate)
     @State private var isSharing = false
+    @FocusState private var isTopicFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -30,6 +31,7 @@ struct ExcuseLabView: View {
                                     .foregroundStyle(NullTheme.oxblood)
 
                                 TextEditor(text: $topic)
+                                    .focused($isTopicFocused)
                                     .frame(minHeight: 104)
                                     .padding(8)
                                     .background(Color.white.opacity(0.36))
@@ -50,6 +52,7 @@ struct ExcuseLabView: View {
                                 .tint(NullTheme.oxblood)
 
                                 NullButton(title: "Ausrede erzeugen", systemImage: "wand.and.stars", fill: NullTheme.oxblood) {
+                                    isTopicFocused = false
                                     result = ExcuseFactory.generate(for: topic, mode: mode)
                                 }
                             }
@@ -79,8 +82,19 @@ struct ExcuseLabView: View {
                     .padding(16)
                     .nullTabBarClearance()
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .navigationTitle("Ausreden")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Fertig") {
+                        isTopicFocused = false
+                    }
+                    .font(.headline.weight(.semibold))
+                    .tint(NullTheme.oxblood)
+                }
+            }
             .sheet(isPresented: $isSharing) {
                 ShareSheet(items: [result])
             }
