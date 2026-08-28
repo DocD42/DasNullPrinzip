@@ -237,6 +237,8 @@ struct AddTaskSheet: View {
             Form {
                 Section {
                     TextField("Zum Beispiel: Bericht abgeben", text: $title)
+                        .foregroundStyle(NullTheme.ink)
+                        .listRowBackground(NullTheme.paper)
                 }
 
                 Section {
@@ -254,6 +256,8 @@ struct AddTaskSheet: View {
                                 }
                             }
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(NullTheme.paper)
                     }
                 } header: {
                     Text("Geeignete Fremdaufgaben")

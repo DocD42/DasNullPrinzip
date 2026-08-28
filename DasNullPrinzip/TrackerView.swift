@@ -236,6 +236,8 @@ struct AddHabitSheet: View {
             Form {
                 Section {
                     TextField("Zum Beispiel: Podcast anfangen", text: $title)
+                        .foregroundStyle(NullTheme.ink)
+                        .listRowBackground(NullTheme.paper)
                 }
 
                 Section {
@@ -253,6 +255,8 @@ struct AddHabitSheet: View {
                                 }
                             }
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(NullTheme.paper)
                     }
                 } header: {
                     Text("Geeignete innere Vorhaben")

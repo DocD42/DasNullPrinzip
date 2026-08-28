@@ -3,6 +3,7 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject private var store: NullStore
     @State private var showSuccess = false
+    private let bookURL = URL(string: "https://das-null-prinzip.de/#buch")!
 
     var body: some View {
         NavigationStack {
@@ -10,6 +11,8 @@ struct DashboardView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         hero
+
+                        bookNotice
 
                         scoreOverview
 
@@ -62,6 +65,44 @@ struct DashboardView: View {
             }
             .navigationTitle("Das Null-Prinzip")
             .toolbarBackground(NullTheme.parchment, for: .navigationBar)
+        }
+    }
+
+    private var bookNotice: some View {
+        NullCard(fill: NullTheme.navy) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "book.closed.fill")
+                        .font(.title3.weight(.black))
+                        .foregroundStyle(NullTheme.gold)
+                        .frame(width: 34, height: 34)
+                        .background(NullTheme.paper.opacity(0.10))
+                        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Das Buch ist da.")
+                            .font(.system(.title3, design: .serif).weight(.black))
+                            .foregroundStyle(NullTheme.paper)
+                        Text("Taschenbuch und Kindle eBook sind erschienen. Die App bleibt bei ihrem Spezialgebiet: Umsetzungsgefahr messen, bevor jemand nervös wird.")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(NullTheme.paper.opacity(0.78))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .layoutPriority(1)
+                }
+
+                Link(destination: bookURL) {
+                    Label("Mehr zum Buch", systemImage: "safari")
+                        .font(.headline.weight(.bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .foregroundStyle(NullTheme.ink)
+                        .background(NullTheme.paper)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Mehr zum Buch auf der Website öffnen")
+            }
         }
     }
 

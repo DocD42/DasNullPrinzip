@@ -137,7 +137,7 @@ Das Null-Prinzip is a German-language satirical companion app for the book of th
 
 The app has no account system, no backend, no advertising, no analytics and no third-party SDKs. User-created ideas, tasks and challenge progress are stored locally on the device only via UserDefaults.
 
-There is no user-generated public content, no messaging, no unrestricted web access and no in-app purchases. The share sheet is used only when the user explicitly shares a generated excuse through iOS.
+There is no user-generated public content, no messaging, no unrestricted web access and no in-app purchases. The home screen includes a neutral external link to the official website for book information; it opens outside the app and does not unlock app content, features or functionality. The share sheet is used only when the user explicitly shares a generated excuse through iOS.
 
 All core features are available immediately after launch.
 ```
@@ -175,4 +175,5 @@ Optional spaeter: gestaltete Screenshots mit kurzen Headlines. Fuer die erste Re
 - Impressum oeffnet: https://das-null-prinzip.de/impressum.html
 - Keine Community-/User-Content-Funktion in Version 1.0.
 - Keine externen Dienste oder Tracking-SDKs hinzugefuegt.
+- Der Buch-Hinweis in der App fuehrt neutral zur Website, nicht als direkter Amazon-Kaufbutton.
 - App-Version in Xcode: 1.0.0, Build: 1.
