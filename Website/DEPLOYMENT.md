@@ -24,6 +24,7 @@ Danach:
 ## Dateien, die live hochgeladen werden
 
 - `index.html`
+- `buecher.html`
 - `styles.css`
 - `script.js`
 - `impressum.html`
@@ -35,6 +36,7 @@ Danach:
 - `favicon.ico`
 - `assets/book-cover.png`
 - `assets/apple-touch-icon.png`
+- `assets/books/*.jpg`
 
 Nicht hochladen:
 
@@ -46,6 +48,7 @@ Nicht hochladen:
 ## Nach dem Upload prüfen
 
 - `https://das-null-prinzip.de/`
+- `https://das-null-prinzip.de/buecher.html`
 - `https://das-null-prinzip.de/impressum.html`
 - `https://das-null-prinzip.de/datenschutz.html`
 - `https://das-null-prinzip.de/support.html`
